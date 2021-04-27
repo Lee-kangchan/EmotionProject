@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+<style>
+    .spinner {
+        width: 50px;
+        height: 50px;
+        background-color: #333;
+
+        margin: 70px auto;
+        -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
+        animation: sk-rotateplane 1.2s infinite ease-in-out;
+    }
+
+    @-webkit-keyframes sk-rotateplane {
+        0% {
+            -webkit-transform: perspective(120px)
+        }
+        50% {
+            -webkit-transform: perspective(120px) rotateY(180deg)
+        }
+        100% {
+            -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg)
+        }
+    }
+
+    @keyframes sk-rotateplane {
+        0% {
+            transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+            -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
+        }
+        50% {
+            transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+            -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
+        }
+        100% {
+            transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+            -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+        }
+    }
+</style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Emotion</title>
+    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome-all.min.css' %}">
+    <script src='{% static "assets/js/jquery.min.js" %}'></script>
+    <script src='{% static "assets/bootstrap/js/bootstrap.min.js" %}'></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script src='{% static "assets/js/app.js" %}'></script>
+</head>
+<script>
+    $(document).ready(function () {
+        var time = 5;
+        tag();
+        var x = setInterval(function() {
+        document.getElementById("secTime").innerHTML = time;
+        time--;
+
+        if(time < 0) {
+            clearInterval(x);
+            document.getElementById("secTime").innerHtml = "문제가 발생했습니다. 다시 실행해주세요!!"
+        }
+    }, 1000);
+        startRecording();
+        setTimeout(stopRecording, 5000);
+    });
+
+</script>
+<script>
+    function tag () {
+      let progress = document.querySelector('.progressTag')
+      let interval = 1
+      let updatesPerSecond = 1000 / 20
+      let end = progress.max * 1.0
+
+      function animator () {
+        progress.value = progress.value + interval
+        if ( progress.value + interval < end){
+          setTimeout(animator, updatesPerSecond);
+        } else {
+          progress.value = end
+        }
+      }
+
+      setTimeout(() => {
+        animator()
+      }, updatesPerSecond)
+    }
+    tag()
+</script>
+<body style="margin-right: 10%;margin-left: 10%;">
+    <nav class="navbar navbar-light navbar-expand-md">
+        <div class="container-fluid"><a class="navbar-brand" href="/main">Emotion</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#">사용방법</a></li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+                </ul>
+            </div><a href="#">관리자</a><a href="#">&nbsp;</a><a href="#"> <a href="#">로그아웃</a>
+            </a></div>
+    </nav>
+    <div class="jumbotron" style="height: 300px;">
+            <video id="webcam" playsinline autoplay=""  style=" position: absolute; float:right" width="300" height="200"></video>
+            <canvas id="canvas" class="d-none"></canvas>
+            <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+        <h1 style="text-align: center;">감정 측정 중입니다..</h1>
+        <p style="text-align: center;">잠시만 기다려주세요</p>
+        <progress style="margin-left:39.5%; margin-top:4%; width:20%;" class="progressTag" value="0" max="100"></progress>
+
+    </div>
+
+    <div id="results">
+
+        <div>
+            <video autoplay=""  style="visibility: hidden; position: absolute"></video>
+        </div>
+      <div>
+            <canvas  style="visibility: hidden; position: absolute" id="grabFrameCanvas" width="500" height="500"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script src='{% static "assets/js/app.js" %}'></script>
+    <div id="formats"></div>
+
+</body>
+
+</html>

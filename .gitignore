@@ -1,0 +1,15 @@
+# .gitignore
+
+### Django ###
+*.log
+*.pot
+*.pyc
+*.zip
+__pycache__/
+local_settings.py
+my_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+*.csv
+venv/*

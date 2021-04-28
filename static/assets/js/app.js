@@ -145,10 +145,8 @@ function createDownloadLink(blob) {
 	//  	}
 	// };
 	var fd=new FormData();
-	const canvas = document.querySelector('#grabFrameCanvas');
-	setTimeout(() => {
 
-        }, 100)
+	const canvas = document.getElementById('canvas');
     var img_url = canvas.toDataURL('image/png');
 	fd.append("imgSrc", img_url);
 	fd.append("audio_data", blob, filename);
@@ -187,6 +185,13 @@ function createDownloadLink(blob) {
                 webcam.start()
                   .then(result =>{
                     console.log("webcam started");
+
+                    console.log("webcam started");
+                    setTimeout(function (){
+
+                        let picture = webcam.snap();
+                        document.querySelector('#download-photo').href = picture;
+                    }, 1000)
                   })
                   .catch(err => {
                     console.log(err);

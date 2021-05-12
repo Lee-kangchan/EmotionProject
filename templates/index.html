@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
     <script src='{% static "assets/js/jquery.min.js" %}'></script>
     <script src='{% static "assets/bootstrap/js/bootstrap.min.js" %}'></script>
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+
 </head>
 
 <script>
@@ -60,11 +63,17 @@
         <h1>사용자 감정 보안 시스템</h1>
         <p>본 시스템은 음성 / 얼굴 등을 이용한 사용자의 감정을 판단하는 보안 시스템 입니다.</p>
         {% if field %}
+            <!-- 음성, 비디오 모듈 -->
             <p><a class="btn btn-primary" role="button" onclick="emotion()">시작하기</a></p>
+            <video id="webcam" playsinline autoplay=""  style=" position: absolute; float:right; visibility: hidden" width="500" height="500"></video>
+            <canvas id="canvas" class="d-none"></canvas>
+            <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
         {% else %}
             <p><a class="btn btn-primary" role="button" onclick="start()">시작하기</a></p>
         {% endif %}
     </div>
 </body>
-
+<!--음성 인증-->
+<!--비디오 인증-->
+<script src='{% static "assets/js/app2.js" %}'></script>
 </html>

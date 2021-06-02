@@ -17,17 +17,9 @@
 
 </head>
 
-<script>
-    function start(){
-        $('#modal').modal("show");
-    }
-    function emotion(){
-        window.location.href ='/emotion';
-    }
-</script>
 <body style="margin-right: 10%;margin-left: 10%;">
     <nav class="navbar navbar-light navbar-expand-md">
-        <div class="container-fluid"><a class="navbar-brand" href="/main">Emotion</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="container-fluid"><a class="navbar-brand" href="/main" id="main">Emotion</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li class="nav-item"><a class="nav-link active" href="#">사용방법</a></li>
@@ -53,7 +45,7 @@
                 </div>
             </div>
             {% if field %}
-                <a href="/dashBoard">관리자</a><a href="">&nbsp;</a><a href="/signOut">로그아웃</a>
+                <a href="#" id="dashBoard">관리자</a><a href="">&nbsp;</a><a href="#" id="logout">로그아웃</a>
             {% else %}
                 <a href="#" onclick="start()">로그인</a><a href="#">&nbsp;</a><a href="#">회원가입</a>
             {% endif %}
@@ -75,5 +67,6 @@
 </body>
 <!--음성 인증-->
 <!--비디오 인증-->
+    <script src='{% static "assets/js/check.js" %}'></script>
 <script src='{% static "assets/js/app2.js" %}'></script>
 </html>

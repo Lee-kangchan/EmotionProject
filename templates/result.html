@@ -15,14 +15,14 @@
 
 <body style="margin-right: 10%;margin-left: 10%;">
     <nav class="navbar navbar-light navbar-expand-md">
-        <div class="container-fluid"><a class="navbar-brand" href="/main">Emotion</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="container-fluid"><a class="navbar-brand" href="/main" id="main">Emotion</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav">
                     <li class="nav-item"><a class="nav-link active" href="#">사용방법</a></li>
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
                 </ul>
-            </div><a href="/dashBoard">관리자</a><a href="#">&nbsp;</a><a href="#">로그아웃</a>
+            </div><a href="/dashBoard" id="/dashBoard">관리자</a><a href="#">&nbsp;</a><a href="#" id="logout">로그아웃</a>
         </div>
     </nav>
     <div class="jumbotron" style="height: 300px;">
@@ -71,4 +71,5 @@
     document.getElementById('voice_negative').innerText = result['voice_negative']
 </script>
 
+    <script src='{% static "assets/js/check.js" %}'></script>
 </html>

@@ -151,6 +151,10 @@ function createDownloadLink(blob) {
 	fd.append("imgSrc", img_url);
 	fd.append("audio_data", blob, filename);
 
+    gps = getLocation();
+    device = mobilePcCheck();
+    fd.append("gps",gps);
+    fd.append("device",device);
 
 	$.ajax({
             type : 'POST',

@@ -9,13 +9,13 @@ from emotionSys.models import User, User_Security, Security
 def main(request):
 
     user_email = request.session.get('user')
-
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
         data = {"log": "main", "date" : datetime.datetime.now()}
+        DBLog.insert_one(data)
 
     request.method == 'GET'
     print(user_email)
@@ -28,13 +28,16 @@ def dashBoard(request):
     request.method == 'GET'
     user = request.session.get('user')
     user_email = request.session.get('user')
+    gps = request.GET['gps']
+    device = request.GET['device']
 
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "dashboard", "date": datetime.datetime.now()}
+        data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     try:
         user = User.objects.get(user_email=user)
         user_security = User_Security.objects.select_related("security").filter(user=user)
@@ -50,61 +53,76 @@ def emotion(request):
     request.method == 'GET'
     user_email = request.session.get('user_email')
     user_email = request.session.get('user')
+    gps = request.GET['gps']
+    device = request.GET['device']
 
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "emotion", "date": datetime.datetime.now()}
+        data = {"log": "emotion", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     return render(request, 'check.html', {'field': user_email})
 
 
 def emotion_result(request):
     request.method == 'GET'
     user_email = request.session.get('user')
+    gps = request.GET['gps']
+    device = request.GET['device']
 
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "emotion_result", "date": datetime.datetime.now()}
+        data = {"log": "emotion_result", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     return render(request, 'result.html')
 
 def emotion_face(request):
     request.method == 'GET'
     user_email = request.session.get('user')
+    gps = request.GET['gps']
+    device = request.GET['device']
 
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "emotion_face", "date": datetime.datetime.now()}
+        data = {"log": "emotion_face", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     return render(request, 'face.html')
 def re_auth(request):
     request.method == 'GET'
     user_email = request.session.get('user')
 
+    gps = request.GET['gps']
+    device = request.GET['device']
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "re_auth", "date": datetime.datetime.now()}
+        data = {"log": "re_auth", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     return render(request, 're_check.html')
 
 
 def signOut(request):
     user_email = request.session.get('user')
+    gps = request.GET['gps']
+    device = request.GET['device']
 
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs[user_email]
-        data = {"log": "signOut", "date": datetime.datetime.now()}
+        data = {"log": "signOut", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        DBLog.insert_one(data)
     if request.session.get('user'):
         del (request.session['user'])
     return redirect('main')
@@ -112,13 +130,16 @@ def signOut(request):
 def phone(request):
     if request.method == 'GET':
         user_email = request.session.get('user')
+        gps = request.GET['gps']
+        device = request.GET['device']
 
         if user_email is not None:
             # Mongo 클라이언트 생성
             client1 = mongo.MongoClient()
             dbs = client1.log
             DBLog = dbs[user_email]
-            data = {"log": "phone", "date": datetime.datetime.now()}
+            data = {"log": "phone", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+            DBLog.insert_one(data)
         return render(request, 'phonecheck.html')
 @csrf_exempt
 def signIn(request):
@@ -131,6 +152,7 @@ def signIn(request):
             dbs = client1.log
             DBLog = dbs[user_email]
             data = {"log": "signIn", "date": datetime.datetime.now()}
+            DBLog.insert_one(data)
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
         try:
@@ -146,13 +168,16 @@ def signIn(request):
 def user_log(request):
     if request.method == 'GET':
         user_email = request.session.get('user')
+        gps = request.GET['gps']
+        device = request.GET['device']
 
         if user_email is not None:
             # Mongo 클라이언트 생성
             client1 = mongo.MongoClient()
             dbs = client1.log
             DBLog = dbs[user_email]
-            data = {"log": "user_log", "date": datetime.datetime.now()}
+            data = {"log": "user_log", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+            DBLog.insert_one(data);
         request.method == 'GET'
         user = request.session.get('user')
 

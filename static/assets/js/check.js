@@ -1,4 +1,3 @@
-
 //GPS불러오기
 function getLocation() {
   if (navigator.geolocation) { // GPS를 지원하면
@@ -35,7 +34,7 @@ $("#logout").click(function (){
     gps = getLocation();
     device = mobilePcCheck();
     alert(gps+ " --" +device);
-    location.href = "/signOut?gps="+gps+"&device="+device+"";
+    location.href = "/signOut?gps="+gps+"&device="+device+"&ip="+getip();
 })
 $("#admin").click(function (){
     gps = getLocation();

@@ -139,6 +139,27 @@ def emotion(request):
 #     return Response({'data': data}, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def ip(request):
+    request.session['ip'] = request.get['ip'];
+
+@api_view(['GET','POST'])
+def gps(request):
+    id = request.session.get("user")
+
+    client1 = mongo.MongoClient()
+    # 호스트와 포트를 지정
+    db = client1.log # db = client1["dsdb"]
+    DBSad = db[id]
+    t = DBSad.find()
+    for x in t:
+        x['gps']
+        if x['gps']== request.GET['gps'] and x['gps'] != "undefined":
+            if x['device'] == request.GET['device']:
+                return Response({'data': "Yes"}, status=status.HTTP_200_OK)
+
+    return Response({'data': "no"}, status=status.HTTP_200_OK)
+
 @api_view(['UPDATE'])
 def mypage_emotion(request):
     if request.method == "UPDATE":

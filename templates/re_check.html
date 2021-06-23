@@ -11,10 +11,11 @@
     <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
     <script src='{% static "assets/js/jquery.min.js" %}'></script>
     <script src='{% static "assets/bootstrap/js/bootstrap.min.js" %}'></script>
-<script type="text/javascript" src="http://jsgetip.appspot.com/?getip"/>
+    <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
     <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome5-overrides.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/Features-Boxed.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body style="margin-right: 10%;margin-left: 10%;">
@@ -39,8 +40,8 @@
             <div class="row justify-content-center features" style="background: rgb(233, 236, 239);">
                 <div class="col-sm-6 col-md-5 col-lg-4 item">
                     <div class="box"><i class="fa fa-map-marker icon"></i>
-                        <h3 class="name">위치 기반 인증</h3>
-                        <p class="description">Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu.</p><a class="learn-more" href="#">Restart »</a>
+                        <h3 class="name" >위치 기반 인증</h3>
+                        <p class="description">Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu.</p><a class="learn-more" id="gps" href="#">Restart »</a>
                     </div>
                 </div>
                 <div class="col-sm-6 col-md-5 col-lg-4 item">

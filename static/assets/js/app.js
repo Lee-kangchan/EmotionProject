@@ -165,9 +165,9 @@ function createDownloadLink(blob) {
             contentType: false,    // 반드시 작성
             success : function(result){
                 if(result.data.faceYN === 'yes'){
-                    window.location.href ='/emotion/result?face_negative=' + result.data.face_negative + '&face_positive=' + result.data.face_positive + '&voice_negative=' + result.data.voice_negative + '&voice_positive=' + result.data.voice_positive;
+                    window.location.href ='/emotion/result?face_negative=' + result.data.face_negative + '&face_positive=' + result.data.face_positive + '&voice_negative=' + result.data.voice_negative + '&voice_positive=' + result.data.voice_positive + '&gps=' +getLocation()+'&device='+mobilePcCheck()+"&ip="+ipCheck();
                 } else {
-                    window.location.href ='/re_auth';
+                    window.location.href ='/re_auth?gps=' +getLocation()+'&device'+mobilePcCheck()+"&ip="+ipCheck();
                 }
             },
             error : function(xtr,status,error){

@@ -56,6 +56,7 @@ def emotion(request):
     gps = request.GET['gps']
     device = request.GET['device']
 
+
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
@@ -71,6 +72,7 @@ def emotion_result(request):
     user_email = request.session.get('user')
     gps = request.GET['gps']
     device = request.GET['device']
+
 
     if user_email is not None:
         # Mongo 클라이언트 생성
@@ -116,6 +118,7 @@ def signOut(request):
     gps = request.GET['gps']
     device = request.GET['device']
 
+
     if user_email is not None:
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
@@ -132,6 +135,7 @@ def phone(request):
         user_email = request.session.get('user')
         gps = request.GET['gps']
         device = request.GET['device']
+
 
         if user_email is not None:
             # Mongo 클라이언트 생성

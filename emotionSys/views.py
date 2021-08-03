@@ -169,6 +169,39 @@ def signIn(request):
         return render(request, 'index.html', {'field': user_email})
 
 
+def user_log2(request):
+    if request.method == 'GET':
+        user_email = request.session.get('user')
+        gps = request.GET['gps']
+        device = request.GET['device']
+
+        if user_email is not None:
+            # Mongo 클라이언트 생성
+            client1 = mongo.MongoClient()
+            dbs = client1.log
+            DBLog = dbs[user_email]
+            data = {"log": "user_log", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+            DBLog.insert_one(data);
+        request.method == 'GET'
+        user = request.session.get('user')
+
+        # Mongo 클라이언트 생성
+        client1 = mongo.MongoClient()
+
+        # 호스트와 포트를 지정
+        client2 = mongo.MongoClient('localhost', 27017)
+
+        # 데이터베이스를 생성 혹은 지정
+        dbs = client1.log
+
+        id = request.session.get("user")
+
+        DBEmotion = dbs[id]
+
+        result = DBEmotion.find()
+
+        return render(request, 'user_log2.html', {'data': result})
+
 def user_log(request):
     if request.method == 'GET':
         user_email = request.session.get('user')

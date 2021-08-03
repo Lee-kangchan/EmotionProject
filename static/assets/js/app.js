@@ -4,7 +4,7 @@ URL = window.URL || window.webkitURL;
 var gumStream; 						//stream from getUserMedia()
 var rec; 							//Recorder.js object
 var input; 							//MediaStreamAudioSourceNode we'll be recording
-
+var picture;
 // shim for AudioContext when it's not avb.
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext //audio context to help us record
@@ -151,12 +151,14 @@ function createDownloadLink(blob) {
 	fd.append("imgSrc", img_url);
 	fd.append("audio_data", blob, filename);
 
-    gps = getLocation();
     device = mobilePcCheck();
-    fd.append("gps",gps);
-    fd.append("device",device);
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-	$.ajax({
+            fd.append("gps",gps);
+            fd.append("device",device);
+            $.ajax({
             type : 'POST',
             url : 'v1/emotion',
             data : fd,
@@ -164,16 +166,28 @@ function createDownloadLink(blob) {
             processData: false,    // 반드시 작성
             contentType: false,    // 반드시 작성
             success : function(result){
+                console.log("왜 안가냐")
                 if(result.data.faceYN === 'yes'){
-                    window.location.href ='/emotion/result?face_negative=' + result.data.face_negative + '&face_positive=' + result.data.face_positive + '&voice_negative=' + result.data.voice_negative + '&voice_positive=' + result.data.voice_positive + '&gps=' +getLocation()+'&device='+mobilePcCheck()+"&ip="+ipCheck();
+                    window.location.href ='/emotion/result?face_negative=' + result.data.face_negative + '&face_positive=' + result.data.face_positive + '&voice_negative=' + result.data.voice_negative + '&voice_positive=' + result.data.voice_positive + '&gps=' +gps+'&device='+device;
                 } else {
-                    window.location.href ='/re_auth?gps=' +getLocation()+'&device'+mobilePcCheck()+"&ip="+ipCheck();
+                    window.location.href ='/re_auth?gps=' +gps+'&device='+device;
                 }
             },
             error : function(xtr,status,error){
                alert("측정 간에 문제가 발생했습니다. 다시 시도해주세요.")
             }
         });
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+
 
 	// xhr.open("POST","v1/emotion",true);
 	// xhr.send(fd);

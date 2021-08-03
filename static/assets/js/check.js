@@ -1,22 +1,5 @@
 //GPS불러오기
-let ips;
-function getLocation() {
-  if (navigator.geolocation) { // GPS를 지원하면
-    navigator.geolocation.getCurrentPosition(function(position) {
-        result = position.coords.latitude + ' ' + position.coords.longitude;
-      return position.coords.latitude + ' ' + position.coords.longitude
-    }, function(error) {
-      console.error(error);
-    }, {
-      enableHighAccuracy: false,
-      maximumAge: 0,
-      timeout: Infinity
-    });
-  } else {
-      result = "X";
-      return "X";
-  }
-}
+
 
 
 //PC 모바일 확인
@@ -56,17 +39,13 @@ function callback(data){
     ips = data.ip;
 }
 $("#gps").click(function(){
-
-	var fd=new FormData();
-    gps = getLocation();
-    device = mobilePcCheck();
-    fd.append("gps",gps);
-    fd.append("device",device);
-
-    $.ajax({
-            type : 'POST',
-            url : '/gps',
-            data : fd,
+     device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+            $.ajax({
+            type : 'GET',
+            url : 'v1/gps?gps=' +gps+'&device='+device,
             dataType: 'json',
             processData: false,    // 반드시 작성
             contentType: false,    // 반드시 작성
@@ -81,52 +60,163 @@ $("#gps").click(function(){
                alert("측정 간에 문제가 발생했습니다. 다시 시도해주세요.")
             }
         });
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+
+
 
 })
 $("#logout").click(function (){
-    gps = getLocation();
     device = mobilePcCheck();
-
-    alert(gps+ " --" +device);
-    location.href = "/signOut?gps="+gps+"&device="+device;
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+            location.href = "/signOut?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 })
 $("#admin").click(function (){
-    gps = getLocation();
     device = mobilePcCheck();
-
-    alert(gps+ " --" +device);
-    location.href = "/admin?gps="+gps+"&device="+device;
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+            location.href = "/admin?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 })
 $("#main").click(function (){
-    gps = getLocation();
     device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-    alert(gps+ " --" +device);
-    location.href = "/main?gps="+gps+"&device="+device;
+            location.href = "/main?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+})
+$("#log1").click(function (){
+    device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+
+            location.href = "/userlog?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+})
+$("#log2").click(function (){
+    device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+
+            location.href = "/userlog?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 })
 
-$("#userlog").click(function (){
-    gps = getLocation();
+$("#log2").click(function (){
     device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-    alert(gps+ " --" +device);
-    location.href = "/userlog?gps="+gps+"&device="+device;
+             location.href = "/userlog2?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 })
 $("#dashBoard").click(function(){
-    gps = getLocation();
     device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-    alert(gps+ " --" +device);
-    location.href = "/dashBoard?gps="+gps+"&device="+device;
+            location.href = "/dashBoard?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 })
 
 function start(){
     $('#modal').modal("show");
 }
 function emotion(){
-    gps = getLocation();
-    device = mobilePcCheck();
-
-    alert(gps+ " --" +device);
-    location.href ="/emotion?gps="+gps+"&device="+device;
+   device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+            location.href ="/emotion?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
 }

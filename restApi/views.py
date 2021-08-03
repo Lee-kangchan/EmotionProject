@@ -84,7 +84,6 @@ def emotion(request):
         else:
             voiceYN = 'no'
 
-        print(today)
         data = {
             'faceYN': faceYN,
             'voiceYN': voiceYN,
@@ -94,7 +93,6 @@ def emotion(request):
             'voice_negative': voiceresult['fear']
         }
 
-        print(data)
         # 만약 설정 조건이 맞을 경우 yes
         if faceYN == 'yes' and voiceYN == 'yes':
             return Response({'data': data}, status=status.HTTP_200_OK)
@@ -153,8 +151,11 @@ def gps(request):
     DBSad = db[id]
     t = DBSad.find()
     for x in t:
-        x['gps']
-        if x['gps']== request.GET['gps'] and x['gps'] != "undefined":
+        if x['log'] == 'main':
+            continue
+        print(x)
+        x['GPS']
+        if x['GPS'] == request.GET['gps'] and x['GPS'] != "undefined":
             if x['device'] == request.GET['device']:
                 return Response({'data': "Yes"}, status=status.HTTP_200_OK)
 

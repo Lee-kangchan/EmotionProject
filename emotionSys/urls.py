@@ -13,4 +13,5 @@ urlpatterns = [
     path('dashBoard', views.dashBoard, name='dashBoard'),
     path('re_auth', views.re_auth, name='re_auth'),
     path('userlog', views.user_log, name='user_log'),
+    path('userlog2', views.user_log2, name='user_log2'),
 ]

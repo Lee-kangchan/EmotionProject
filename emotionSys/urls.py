@@ -4,6 +4,7 @@ from .views import AuthSmsView, v2_phoneCheck
 
 urlpatterns = [
     path('main', views.main, name='main'),
+    path('main2', views.main2, name='main2'), # 예시 나중에 삭제
     path('emotion', views.emotion, name='emotion'),
     path('face2', views.emotion_face, name='emotion_face'),
     path('emotion/result', views.emotion_result, name='emotion_result'),

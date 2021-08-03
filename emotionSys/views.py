@@ -32,6 +32,13 @@ def main(request):
 
     return render(request, 'index.html', {'field': user_email})
 
+def main2(request):
+    request.method == 'GET'
+    user_email = request.session.get('user')
+    print(user_email)
+
+    return render(request, 'index2.html', {'field': user_email})
+
 
 @csrf_exempt
 def dashBoard(request):

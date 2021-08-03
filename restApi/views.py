@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -6,6 +8,7 @@ import base64
 import pymongo as mongo
 from datetime import date
 
+from uuid import uuid4
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -108,6 +111,7 @@ def emotion(request):
 
     # elif request.method == "POST":
     #     audio_file = request.FILES.get('audio_data', None)
+
     #
     #     obj = wave.open(audio_file, 'r')
     #     audio = wave.open('voiceEmotion/test.wav', 'wb')
@@ -126,21 +130,29 @@ def emotion(request):
     #     return Response({'data': "success"}, status=status.HTTP_200_OK)
 
 
-# @api_view(['GET', 'POST'])
-# def face(request):
-#     print(request.POST['imgSrc'])
-#     image = request.POST['imgSrc'].split(',')[1]
-#     decoded_data = base64.b64decode(image)
-#     np_data = np.fromstring(decoded_data, np.uint8)
-#     print("sdfskodfksdf")
-#     faceYN, faceData = faceEmotion(request.session.get("user"), np_data)
-#     data = {
-#         'yn': faceYN,
-#         'face_positive': 1 - faceData,
-#         'face_negative': faceData,
-#     }
-#     print(data)
-#     return Response({'data': data}, status=status.HTTP_200_OK)
+@api_view(['GET', 'POST'])
+def face(request):
+    #
+    # id = request.session.get("user")
+    id = "admin"
+    today = date.today()
+    uuid_name = uuid4().hex;
+    data_json = {
+        "_id": uuid_name,
+        "happy": request.POST['happy'],
+        "angry": request.POST['angry'],
+        "sad": request.POST['sad'],
+        "fearful": request.POST['fearful'],
+        "Date": str(today)
+    }
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    db = client1.face
+    DBFace = db[id]
+    DBFace.insert_one(data_json)
+
+    print(data_json)
+    return Response({'data': data_json}, status=status.HTTP_200_OK)
 
 
 @api_view(['UPDATE'])

@@ -45,7 +45,7 @@ def extract_feature(file_name, **kwargs):
             print(result)
         if chroma:
             print("chroma")
-            chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
+            chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)
             result = np.hstack((result, chroma))
             # plt.title("chroma")
             # plt.plot(chroma)
@@ -54,7 +54,7 @@ def extract_feature(file_name, **kwargs):
             print(result)
         if mel:
             print("mel")
-            mel = np.mean(librosa.feature.melspectrogram(x, sr=sample_rate).T,axis=0)
+            mel = np.mean(librosa.feature.melspectrogram(x, sr=sample_rate).T, axis=0)
             result = np.hstack((result, mel))
 
             # plt.title("mel")
@@ -63,10 +63,10 @@ def extract_feature(file_name, **kwargs):
             print(result)
         if contrast:
             print("contrast")
-            contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T,axis=0)
+            contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sample_rate).T, axis=0)
             result = np.hstack((result, contrast))
         if tonnetz:
             print("tonnetz")
-            tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(x), sr=sample_rate).T,axis=0)
+            tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(x), sr=sample_rate).T, axis=0)
             result = np.hstack((result, tonnetz))
     return result

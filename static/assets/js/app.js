@@ -8,13 +8,13 @@ var input; 							//MediaStreamAudioSourceNode we'll be recording
 // shim for AudioContext when it's not avb.
 var AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioContext //audio context to help us record
-if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)) {
-        // Let's log a warning if the sample is not supposed to execute on this
-        // version of Chrome.
-        if (56 > parseInt(RegExp.$1)) {
-            ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + 56 + '.');
-        }
-    }
+// if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)) {
+//         // Let's log a warning if the sample is not supposed to execute on this
+//         // version of Chrome.
+//         if (56 > parseInt(RegExp.$1)) {
+//             ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + 56 + '.');
+//         }
+//     }
 // var recordButton = document.getElementById("recordButton");
 // var stopButton = document.getElementById("stopButton");
 // var pauseButton = document.getElementById("pauseButton");
@@ -147,11 +147,32 @@ function createDownloadLink(blob) {
 	var fd=new FormData();
 
 	const canvas = document.getElementById('canvas');
-    var img_url = canvas.toDataURL('image/png');
-	fd.append("imgSrc", img_url);
+    // var img_url = canvas.toDataURL('image/png');
+	// fd.append("imgSrc", img_url);
 	fd.append("audio_data", blob, filename);
-
-
+    // $.ajaxSetup({
+    //  beforeSend: function(xhr, settings) {
+    //      function getCookie(name) {
+    //          var cookieValue = null;
+    //          if (document.cookie && document.cookie != '') {
+    //              var cookies = document.cookie.split(';');
+    //              for (var i = 0; i < cookies.length; i++) {
+    //                  var cookie = jQuery.trim(cookies[i]);
+    //                  // Does this cookie string begin with the name we want?
+    //                  if (cookie.substring(0, name.length + 1) == (name + '=')) {
+    //                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+    //                      break;
+    //                  }
+    //              }
+    //          }
+    //          return cookieValue;
+    //      }
+    //      if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+    //          // Only send the token to relative URLs i.e. locally.
+    //          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    //      }
+    //  }
+    // });
 	$.ajax({
             type : 'POST',
             url : 'v1/emotion',
@@ -160,14 +181,13 @@ function createDownloadLink(blob) {
             processData: false,    // 반드시 작성
             contentType: false,    // 반드시 작성
             success : function(result){
-                if(result.data.faceYN === 'yes'){
-                    window.location.href ='/emotion/result?face_negative=' + result.data.face_negative + '&face_positive=' + result.data.face_positive + '&voice_negative=' + result.data.voice_negative + '&voice_positive=' + result.data.voice_positive;
-                } else {
-                    window.location.href ='/re_auth';
+                if(result.data.faceYN === 'no') {
+                    alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
+                    window.location.href = '/v2/fail';
                 }
             },
             error : function(xtr,status,error){
-               alert("측정 간에 문제가 발생했습니다. 다시 시도해주세요.")
+               alert("측정 오류. 기존 페이지를 유지합니다.")
             }
         });
 
@@ -175,54 +195,54 @@ function createDownloadLink(blob) {
 	// xhr.send(fd);
 }
 
- var imageCapture;
- onGetUserMediaButtonClick()
-    function onGetUserMediaButtonClick() {
-        const webcamElement = document.getElementById('webcam');
-                const canvasElement = document.getElementById('canvas');
-                const snapSoundElement = document.getElementById('snapSound');
-                const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
-                webcam.start()
-                  .then(result =>{
-                    console.log("webcam started");
-
-                    console.log("webcam started");
-                    setTimeout(function (){
-
-                        let picture = webcam.snap();
-                        document.querySelector('#download-photo').href = picture;
-                    }, 1000)
-                  })
-                  .catch(err => {
-                    console.log(err);
-                });
-
-                const canvas = document.querySelector('#grabFrameCanvas');
-                //여기서 보내면 됩니다
-                setTimeout(1000)
-                let picture = webcam.snap();
-                // document.querySelector('#download-photo').href = picture;
-                console.log(picture);
-                console.log("뭐지")
-                drawCanvas(canvas,picture );
-    }
-    function onTakePhotoButtonClick() {
-        const canvas = document.querySelector('#grabFrameCanvas');
-        //여기서 보내면 됩니다
-                setTimeout(1000)
-        let picture = webcam.snap();
-        console.log(picture);
-        document.querySelector('#download-photo').href = picture;
-        drawCanvas(canvas,webcam.snap() );
-    }
-function drawCanvas(canvas, img) {
-        canvas.width = getComputedStyle(canvas).width.split('px')[0];
-        canvas.height = getComputedStyle(canvas).height.split('px')[0];
-        let ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
-        let x = (canvas.width - img.width * ratio) / 2;
-        let y = (canvas.height - img.height * ratio) / 2;
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
-            x, y, img.width * ratio, img.height * ratio);
-
-    }
+//  var imageCapture;
+//  onGetUserMediaButtonClick()
+//     function onGetUserMediaButtonClick() {
+//         const webcamElement = document.getElementById('webcam');
+//                 const canvasElement = document.getElementById('canvas');
+//                 const snapSoundElement = document.getElementById('snapSound');
+//                 const webcam = new Webcam(webcamElement, 'user', canvasElement, snapSoundElement);
+//                 webcam.start()
+//                   .then(result =>{
+//                     console.log("webcam started");
+//
+//                     console.log("webcam started");
+//                     setTimeout(function (){
+//
+//                         let picture = webcam.snap();
+//                         document.querySelector('#download-photo').href = picture;
+//                     }, 1000)
+//                   })
+//                   .catch(err => {
+//                     console.log(err);
+//                 });
+//
+//                 const canvas = document.querySelector('#grabFrameCanvas');
+//                 //여기서 보내면 됩니다
+//                 setTimeout(1000)
+//                 let picture = webcam.snap();
+//                 // document.querySelector('#download-photo').href = picture;
+//                 console.log(picture);
+//                 console.log("뭐지")
+//                 drawCanvas(canvas,picture );
+//     }
+//     function onTakePhotoButtonClick() {
+//         const canvas = document.querySelector('#grabFrameCanvas');
+//         //여기서 보내면 됩니다
+//                 setTimeout(1000)
+//         let picture = webcam.snap();
+//         console.log(picture);
+//         document.querySelector('#download-photo').href = picture;
+//         drawCanvas(canvas,webcam.snap() );
+//     }
+// function drawCanvas(canvas, img) {
+//         canvas.width = getComputedStyle(canvas).width.split('px')[0];
+//         canvas.height = getComputedStyle(canvas).height.split('px')[0];
+//         let ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+//         let x = (canvas.width - img.width * ratio) / 2;
+//         let y = (canvas.height - img.height * ratio) / 2;
+//         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+//         canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+//             x, y, img.width * ratio, img.height * ratio);
+//
+//     }

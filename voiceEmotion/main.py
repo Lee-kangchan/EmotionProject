@@ -5,7 +5,7 @@ import pickle
 from sys import byteorder
 from array import array
 from struct import pack
-from sklearn.neural_network import MLPClassifier
+# from sklearn.neural_network import MLPClassifier
 
 from voiceEmotion.utils import extract_feature
 from voiceEmotion.modelTrain import modelTrain

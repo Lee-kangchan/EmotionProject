@@ -139,6 +139,7 @@ def face(request):
     uuid_name = uuid4().hex;
     data_json = {
         "_id": uuid_name,
+        "neutral": request.POST['neutral'],
         "happy": request.POST['happy'],
         "angry": request.POST['angry'],
         "sad": request.POST['sad'],

@@ -284,7 +284,54 @@ def v2_main(request):
             print(user.name)
             return render(request, 'index.html', {'data': user.name})
 
+def v2_userlog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
 
+
+    # 데이터베이스를 생성 혹은 지정
+    dbs = client1.log
+
+    id = request.session.get("user")
+    id = "admin"
+    # DBFace = db[id]
+    # DBVoice = db1[id]
+    DBEmotion = dbs[id]
+
+    result = DBEmotion.find()
+
+    return render(request, 'userlog.html', {'data': result})
+def v2_facelog(request):
+    request.method == 'GET'
+
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    # 데이터베이스를 생성 혹은 지정
+    db = client1.face
+
+    id = request.session.get("user")
+    id = "admin"
+    DBFace = db[id]
+
+    result = DBFace.find()
+
+    return render(request, 'facelog.html', {'data': result})
+def v2_voicelog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+    db1 = client1.voice
+
+    id = request.session.get("user")
+    id = "admin"
+    # DBFace = db[id]
+    DBVoice = db1[id]
+
+    result = DBVoice.find()
+
+    return render(request, 'voicelog.html', {'data': result})
 def v2_signIn(request):
     if request.method == 'GET':
         return render(request, 'login.html')

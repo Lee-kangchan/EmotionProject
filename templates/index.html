@@ -447,20 +447,13 @@
             }
         }
 
-        $(document).ready(function () {
+    </script>
+    <script type="text/javascript">
+        function getIP(json) {
+            console.log(json.ip)
+        }
 
-            startRecording();
-            setTimeout(stopRecording, 5000);
-
-
-        })
-            </script>
-            <script type="text/javascript">
-           function getIP(json) {
-              console.log(json.ip)
-           }
-
-        </script>
+    </script>
 
     <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'assets/js/chart.min.js' %}"></script>

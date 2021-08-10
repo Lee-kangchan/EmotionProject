@@ -31,6 +31,14 @@ class AuthSms(models.Model):
         db_table = 'auth_sms'
 
 
+class AuthEmail(models.Model):
+    auth_email = models.CharField(max_length=200, primary_key=True)
+    auth_number = models.IntegerField()
+
+    class Meta:
+        db_table = 'auth_email'
+
+
 class Auth_Category(models.Model):
     auth_name = models.CharField(max_length=200)
     auth_explain = models.CharField(max_length=400, null=True)

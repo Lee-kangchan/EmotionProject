@@ -21,7 +21,7 @@ from requests import Response
 from rest_framework import status
 from rest_framework.utils import json
 
-from emotionSys.models import User, AuthSms, Auth_Category  # , User_Security, Security
+from emotionSys.models import User, AuthSms, Auth_Category, AuthEmail  # , User_Security, Security
 from my_settings import EMAIL
 
 
@@ -284,6 +284,57 @@ def v2_main(request):
             print(user.name)
             return render(request, 'index.html', {'data': user.name})
 
+def v2_userlog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+
+    # 데이터베이스를 생성 혹은 지정
+    dbs = client1.log
+
+    id = request.session.get("user")
+    id = "admin"
+    # DBFace = db[id]
+    # DBVoice = db1[id]
+    DBEmotion = dbs[id]
+
+    result = DBEmotion.find()
+
+    return render(request, 'userlog.html', {'data': result})
+
+
+def v2_facelog(request):
+    request.method == 'GET'
+
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    # 데이터베이스를 생성 혹은 지정
+    db = client1.face
+
+    id = request.session.get("user")
+    id = "admin"
+    DBFace = db[id]
+
+    result = DBFace.find()
+
+    return render(request, 'facelog.html', {'data': result})
+def v2_voicelog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+    db1 = client1.voice
+
+    id = request.session.get("user")
+    id = "admin"
+    # DBFace = db[id]
+    DBVoice = db1[id]
+
+    result = DBVoice.find()
+
+    return render(request, 'voicelog.html', {'data': result})
+
 
 def v2_signIn(request):
     if request.method == 'GET':
@@ -301,6 +352,10 @@ def v2_signIn(request):
         request.session['user_email'] = user.email
         return render(request, 'index.html', {'data': user.name})
 
+def v2_signOut(request):
+    if request.session.get('user'):
+        del (request.session['user'])
+    return redirect('main')
 
 def v2_signUp(request):
     if request.method == 'GET':
@@ -328,10 +383,58 @@ def v2_fail(request):
 
 def v2_emailCheck(request):
     if request.method == 'GET':
+
+        try:
+            user_email = request.session.get('user_email')
+            user = User.objects.get(email=user_email)
+
+            print(user_email)
+            if user is None:
+                print('not')
+                return render(request, 'check.html')
+
+            user_email = user.email
+            created_auth_number = randint(1000, 10000)
+            auth_email = AuthEmail.objects.get(auth_email=user_email)
+            auth_email.auth_number = created_auth_number
+            auth_email.save()
+
+            mail_title = "[데모 시스템] 이메일 2차 인증"
+            message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
+            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email.send()
+
+            return render(request, 'emailCheck.html', {'data': user_email})
+
+        except AuthEmail.DoesNotExist:
+            created_auth_number = randint(1000, 10000)
+            AuthEmail.objects.create(
+                auth_email=user_email,
+                auth_number=created_auth_number
+            ).save()
+
+            mail_title = "[데모 시스템] 이메일 2차 인증"
+            message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
+            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email.send()
+
+            return render(request, 'emailCheck.html', {'data': user_email})
+
+    elif request.method == 'POST':
+        print('post')
         user_email = request.session.get('user_email')
+        input_data = request.POST['number']
 
-        return render(request, 'emailCheck.html', {'data': user_email})
+        user = User.objects.get(email=user_email)
+        email = AuthEmail.objects.get(auth_email=user.email)
 
+        if int(input_data) == int(email.auth_number):
+            print('collect')
+            return render(request, 'index.html', {'data': user.name})
+
+        else:
+            print('fail')
+            return render(request, 'check.html')
 
 class v2_phoneCheck(View):
 
@@ -364,6 +467,9 @@ class v2_phoneCheck(View):
             user_email = request.session.get('user_email')
             user = User.objects.get(email=user_email)
 
+            if user is None:
+                return render(request, 'check.html')
+
             # input_data = json.loads(request.body)
             # input_phone_number = input_data['auth_phone']
             input_phone_number = user.phone
@@ -385,6 +491,7 @@ class v2_phoneCheck(View):
 
             return render(request, 'phoneCheck.html', {'data': user.phone})
 
+
     def post(self, request):
 
         user_email = request.session.get('user_email')
@@ -394,9 +501,11 @@ class v2_phoneCheck(View):
         auth = AuthSms.objects.get(auth_phone=user.phone)
 
         if int(input_data) == int(auth.auth_number):
-            return render(request, 'index.html')
+            print('collect')
+            return render(request, 'index.html', {'data': user.name})
 
         else:
+            print('fail')
             return render(request, 'check.html')
 
 

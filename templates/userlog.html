@@ -6,32 +6,41 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Dashboard - Brand</title>
+
     <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome-all.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome5-overrides.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/untitled.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+
+    <script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+
+    <script src='{% static "assets/js/face-api.min.js" %}'></script>
+    <script src='{% static "assets/js/jquery.min.js" %}'></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+
 </head>
-<script>
-    function re_emotion() {
-        alert("인증에 성공하셨습니다.")
-        location.href='/v2/main'
-    }
-</script>
+
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+        <video id="video" width="720" height="560" autoplay muted style="visibility: hidden ;position: fixed"></video>
+        <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+        <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
             <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span>00 은행 시스템<br></span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
+                    <li class="nav-item"><a class="nav-link active" href="/main"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/v2/faceLog"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/v2/voiceLog"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/v2/userLog"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
                     <li class="nav-item"></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -124,7 +133,23 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="assets/img/avatars/avatar1.jpeg"></a>
+                                <div class="nav-item dropdown no-arrow">
+                                    {% if data %}
+                                         <script>
+                                            setInterval(emotion, 10000);
+                                         </script>
+                                         <span class="dropdown-toggle nav-link" aria-expanded="false">
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ data }}</span>
+                                            &nbsp;
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
+                                         </span>
+                                    {% else %}
+                                        <span class="dropdown-toggle nav-link" aria-expanded="false">
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signIn'">로그인</span>
+                                            &nbsp;
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signUp'">회원가입</span>
+                                        </span>
+                                    {% endif %}
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
                                     </div>
@@ -134,76 +159,123 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <div class="d-sm-flex justify-content-between align-items-center mb-4">
-                        <h3 class="text-dark mb-0">재인증 목록</h3>
-                    </div>
-                    <div class="row"></div>
-                    <div class="row">
-                        <div class="col-lg-7 col-xl-8">
-                            <div class="card shadow mb-4"></div>
+        <br>
+        <div class="row mb-3">
+            <div class="col-lg-8">
+                <div class="row mb-3 d-none">
+                    <div class="col">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
                         </div>
-                        <div class="col-lg-5 col-xl-4">
-                            <div class="card shadow mb-4"></div>
-                        </div>
                     </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <div onclick="setTimeout(function () {
-                                    alert('인증에 성공하셨습니다.');
-                                    location.href='/v2/main'
-                                }, 5000)" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-primary text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">감정 기반 재인증</p>
-                                            <p class="text-white-50 small m-0">#4e73df</p>
-                                        </div>
+                    <div class="col">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
                                     </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
                                 </div>
-                                <div onclick="location.href='/v2/emailCheck'" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-success text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">이메일 재인증</p>
-                                            <p class="text-white-50 small m-0">#1cc88a</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div onclick="location.href='/v2/locateCheck'" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-info text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">위치 기반 재인증</p>
-                                            <p class="text-white-50 small m-0">#36b9cc</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div onclick="location.href='/v2/phoneCheck'" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-warning text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">휴대폰 번호 재인증</p>
-                                            <p class="text-white-50 small m-0">#f6c23e</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-danger text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">Danger</p>
-                                            <p class="text-white-50 small m-0">#e74a3b</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-secondary text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">Secondary</p>
-                                            <p class="text-white-50 small m-0">#858796</p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row mb-3 d-none">
+                    <div class="col">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="card shadow">
+
+            <div class="card-body">
+                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                    <table class="table my-0" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Log</th>
+                                <th>Date</th>
+                                <th>GPS</th>
+                                <th>Device</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            {% for result in data %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ result.log}}</td>
+                                    <td>{{ result.date}}</td>
+                                    <td>{{ result.GPS}}</td>
+                                    <td>{{ result.device}}</td>
+                            {% endfor %}
+                            </tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 align-self-center">
+{#                        <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 1 of 1</p>#}
+                    </div>
+                    <div class="col-md-6">
+                        <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                            <ul class="pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+{#                                <li class="page-item"><a class="page-link" href="#">2</a></li>#}
+{#                                <li class="page-item"><a class="page-link" href="#">3</a></li>#}
+                                <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
             </div>
             <footer class="bg-white sticky-footer">
                 <div class="container my-auto">
@@ -212,10 +284,93 @@
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src='{% static "assets/js/app.js" %}'></script>
+    <script src='{% static "assets/js/Recorder.js" %}'></script>
+    <script>
+
+const video = document.getElementById("video");
+
+// face api 허용
+Promise.all([
+  faceapi.nets.tinyFaceDetector.loadFromUri("{% static 'assets/models' %}"),
+  faceapi.nets.faceLandmark68Net.loadFromUri("{% static 'assets/models' %}"),
+  faceapi.nets.faceRecognitionNet.loadFromUri("{% static 'assets/models' %}"),
+  faceapi.nets.faceExpressionNet.loadFromUri("{% static 'assets/models' %}"),
+]).then(startVideo);
+
+// 비디오 시작 함수
+function startVideo() {
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+}
+
+// 비디오 사이즈
+// 비동기 처리 얼굴 표정 값
+setInterval(async () => {
+    const detections = await faceapi
+      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+      .withFaceExpressions();
+    var data = detections[0].expressions.fearful;
+    console.log(parseFloat(data).toFixed(8));
+    var fd=new FormData();
+
+	fd.append("neutral", parseFloat(detections[0].expressions.neutral).toFixed(8));
+	fd.append("happy", parseFloat(detections[0].expressions.happy).toFixed(8));
+	fd.append("angry", parseFloat(detections[0].expressions.angry).toFixed(8));
+	fd.append("sad", parseFloat(detections[0].expressions.sad).toFixed(8));
+	fd.append("fearful", parseFloat(detections[0].expressions.fearful).toFixed(8));
+	$.ajax({
+            type : 'POST',
+            url : '/v1/face',
+            data : fd,
+            dataType: 'json',
+            processData: false,    // 반드시 작성
+            contentType: false,    // 반드시 작성
+            success : function(result){
+                fear = parseFloat(detections[0].expressions.fearful).toFixed(8)
+                if(fear > 0.15) {
+                    alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
+                    window.location.href = '/v2/fail';
+                }
+
+            },
+            error : function(xtr,status,error){
+               alert("측정 오류. 기존 페이지를 유지합니다.")
+            }
+        });
+  }, 5000);
+
+//미디어 허용
+if (navigator.mediaDevices.getUserMedia) {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video.srcObject = stream;
+    })
+    .catch(function (err0r) {
+      console.log("Something went wrong!");
+    });
+}
+
+    </script>
+    <script type="text/javascript">
+	function getIP(json) {
+		console.log(json.ip)
+	}
+
+</script>
+<script type="text/javascript" src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
+
     <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'assets/js/chart.min.js' %}"></script>
     <script src="{% static 'assets/js/bs-init.js' %}"></script>
     <script src="{% static 'assets/js/theme.js' %}"></script>
 </body>
-
 </html>

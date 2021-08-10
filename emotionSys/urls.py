@@ -23,7 +23,10 @@ urlpatterns = [
 
     path('v2/main', views.v2_main, name='v2_main'),
     path('v2/signIn', views.v2_signIn, name='v2_signIn'),
-    # path('v2/signOut', views.v2_signOut, name='v2_signOut'),
+    path('v2/userLog', views.v2_userlog, name='v2_userlog'),
+    path('v2/faceLog', views.v2_facelog, name='v2_facelog'),
+    path('v2/voiceLog', views.v2_voicelog, name='v2_voicelog'),
+    path('v2/signOut', views.v2_signOut, name='v2_signOut'),
     path('v2/signUp', views.v2_signUp, name='v2_signUp'),
     path('v2/fail', views.v2_fail, name='v2_fail'),
     path('v2/emailCheck', views.v2_emailCheck, name='v2_emailCheck'),

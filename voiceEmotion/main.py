@@ -200,7 +200,7 @@ def record_to_user_file(path):
 def emotionCheck():
     # load the saved model (after training)
     model = pickle.load(open("voiceEmotion/result/mlp_classifier.model", "rb"))
-    print("Please talk")
+    #print("Please talk")
     # filename = "voiceEmotion/test.wav"
     # # record the file (start talking)
     # record_to_file(filename)
@@ -224,7 +224,7 @@ def emotionCheck():
 
     # result 결과가 높을 경우에 재 학습을 백그라운드에서 시킨다.
     # 현재 결과 값이 높을 경우는 처리 되지 않았고 결과값이 오류를 발생시켰을 경우 예외처리를 추가해야 한다.
-    print(voice_key)
+    # print(voice_key)
     # if(result[voice_key] > 0.8):
     # file_list = os.listdir('voiceEmotion/data/Actor_2')
     # count = 0
@@ -247,7 +247,7 @@ def emotionCheck():
     #
     #     record_to_user_file('voiceEmotion/data/Actor_2/02-01-06-' + str(count + 1) + '.wav')
 
-    print("result:", result)
+    # print("result:", result)
 
     return result
 

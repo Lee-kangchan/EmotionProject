@@ -36,6 +36,7 @@ function startRecording() {
 	}).catch(function(err) {
 	});
 }
+
 function stopRecording() {
 	console.log("stopButton clicked");
 
@@ -71,20 +72,17 @@ function createDownloadLink(blob) {
 	var fd=new FormData();
 
 	fd.append("audio_data", blob, filename);
-	fd.append("neutral", detections[0].expressions.neutral);
-	fd.append("happy", detections[0].expressions.happy);
-	fd.append("angry", detections[0].expressions.angry);
-	fd.append("sad", detections[0].expressions.sad);
-	fd.append("fearful", detections[0].expressions.fearful);
+
 	$.ajax({
+			headers: {'X-CSRFToken': csrftoken},
             type : 'POST',
-            url : 'v1/emotion',
+            url : '/v2/voice',
             data : fd,
             dataType: 'json',
             processData: false,    // 반드시 작성
             contentType: false,    // 반드시 작성
             success : function(result){
-                if(result.data.faceYN === 'no') {
+                if(result.data.negative > 0.4) {
                     alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
                     window.location.href = '/v2/fail';
                 }
@@ -93,5 +91,4 @@ function createDownloadLink(blob) {
                alert("측정 오류. 기존 페이지를 유지합니다.")
             }
         });
-
 }

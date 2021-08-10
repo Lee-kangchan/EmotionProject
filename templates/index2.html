@@ -1,255 +1,162 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Speech Detection</title>
-
-<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Emotion</title>
+    <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+    <script src='{% static "assets/js/jquery.min.js" %}'></script>
+    <script src='{% static "assets/bootstrap/js/bootstrap.min.js" %}'></script>
+    <script type="text/javascript" src="http://jsgetip.appspot.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
-<body>
-<div>
-  <video id="video" width="720" height="560" autoplay muted></video>
-  <canvas id="canvas" style="visibility: hidden"></canvas>
-    <div>
-      Sad
-       <select id="sad" name="browsers">
-        <option value="red">빨강</option>
-        <option selected value="blue">파랑</option>
-        <option value="green">초록</option>
-        <option value="purple">보라</option>
-        <option value="g">갈색</option>
-        <option value="black">검정</option>
-        </select><br>
-      Angry
-       <select id="browsers" name="browsers">
-        <option selected value="red">빨강</option>
-        <option value="blue">파랑</option>
-        <option value="green">초록</option>
-        <option value="purple">보라</option>
-        <option value="g">갈색</option>
-        <option value="black">검정</option>
-        </select><br>
-      Surprise
-       <select id="Surprise" name="browsers">
-        <option value="red">빨강</option>
-        <option value="blue">파랑</option>
-        <option selected value="green">초록</option>
-        <option value="purple">보라</option>
-        <option value="g">갈색</option>
-        <option value="black">검정</option>
-       </select><br>
-      Nervous
-       <select id="Stressful" name="browsers">
-        <option value="red">빨강</option>
-        <option value="blue">파랑</option>
-        <option value="green">초록</option>
-        <option selected value="purple">보라</option>
-        <option value="g">갈색</option>
-        <option value="black">검정</option>
-       </select><br>
-      default
-       <select id="default" name="browsers">
-        <option  value="red">빨강</option>
-        <option value="blue">파랑</option>
-        <option value="green">초록</option>
-        <option value="purple">보라</option>
-        <option value="g">갈색</option>
-        <option selected value="black">검정</option>
-        </select><br>
-      dB
-      <input type="text" value ="80" id="dB">
-      </div>
-  <div style="float:right;width: 50%">
-      <div class="words" contenteditable>
-  </div>
 
-</div>
-</div>
+<body style="margin-right: 10%;margin-left: 10%;">
+    <nav class="navbar navbar-light navbar-expand-md">
+        <div class="container-fluid"><a class="navbar-brand" href="/main">Emotion</a><button data-toggle="collapse" data-target="#navcol-1" class="navbar-toggler"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" href="#">사용방법</a></li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+                </ul>
+            </div><a href="/dashBoard">관리자</a><a href="#">&nbsp;<a href="#"></a><a href="#">로그아웃</a>
+        </div>
+    </nav>
+    <div class="container-fluid">
+        <br>
+        <div class="row mb-3">
+            <div class="col-lg-8">
+                <div class="row mb-3 d-none">
+                    <div class="col">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="row mb-3 d-none">
+                    <div class="col">
+                        <div class="card text-white bg-primary shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-success shadow">
+                            <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col">
+                                        <p class="m-0">Peformance</p>
+                                        <p class="m-0"><strong>65.2%</strong></p>
+                                    </div>
+                                    <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                </div>
+                                <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i> 5% since last month</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="card shadow">
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 text-nowrap">
+                        <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"><label>Show <select class="form-control form-control-sm custom-select custom-select-sm">
+                                    <option value="10" selected>10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                </select></label></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search" class="form-control form-control-sm" aria-controls="dataTable" placeholder="Search" /></label></div>
+                    </div>
+                </div>
+                <div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                    <table class="table my-0" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Log</th>
+                                <th>Date</th>
+                                <th>GPS</th>
+                                <th>Device</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                            {% for result in data %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ result.log}}</td>
+                                    <td>{{ result.date}}</td>
+                                    <td>{{ result.GPS}}</td>
+                                    <td>{{ result.device}}</td>
+                            {% endfor %}
+                            </tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 align-self-center">
+{#                        <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite">Showing 1 to 1 of 1</p>#}
+                    </div>
+                    <div class="col-md-6">
+                        <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                            <ul class="pagination">
+                                <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+{#                                <li class="page-item"><a class="page-link" href="#">2</a></li>#}
+{#                                <li class="page-item"><a class="page-link" href="#">3</a></li>#}
+                                <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-
-<script src='{% static "assets/js/app.js" %}'></script>
-<script>
-const video = document.getElementById("video");
-
-var emotion = "black"
-Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("/static/assets/models"),
-  faceapi.nets.faceLandmark68Net.loadFromUri("/static/assets/models"),
-  faceapi.nets.faceRecognitionNet.loadFromUri("/static/assets/models"),
-  faceapi.nets.faceExpressionNet.loadFromUri("/static/assets/models"),
-]).then(startVideo);
-
-function startVideo() {
-  navigator.mediaDevices
-    .getUserMedia({ video: true })
-    .then(function (stream) {
-      video.srcObject = stream;
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-}
-
-video.addEventListener("playing", () => {
-  const canvas = faceapi.createCanvasFromMedia(video);
-  document.body.append(canvas);
-  const displaySize = { width: video.width, height: video.height };
-  faceapi.matchDimensions(canvas, displaySize);
-
-})
-
-    var canvas = document.getElementById("canvas")
-        if (navigator.mediaDevices.getUserMedia) {
-          navigator.mediaDevices.getUserMedia({ video: true })
-            .then(function (stream) {
-              video.srcObject = stream;
-            })
-            .catch(function (err0r) {
-              console.log("Something went wrong!");
-            });
-        }
-
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  let recognition = new SpeechRecognition();
-  let i = 0;
-
-  let texts_arr = [];
-  recognition.interimResults = true;
-  recognition.lang = 'ko-KR';
-  recognition.continuous = true;
-  let makeNewTextContent = function() {
-    p = document.createElement('p');
-    document.querySelector('.words').appendChild(p);
-  };
-
-  let p = null;
-
-  recognition.start();
-  recognition.onstart = function() {
-    makeNewTextContent(); // 음성 인식 시작시마다 새로운 문단을 추가한다.
-  };
-  recognition.onspeechstart = function() {
-  console.log('Speech has been detected');
-}
-  recognition.onend = function() {
-    recognition.start();
-  };
-
-  recognition.onresult = function(e) {
-
-    let start = new Date().getTime();  // 시작
-    let texts = Array.from(e.results)
-            .map(results => results[0].transcript).join("");
-
-    texts.replace(/느낌표|강조|뿅/gi, '❗️');
-    var data2 = texts.split(" ")
-    var len = data2.length-1;
-    texts_arr[len] = data2[len];
-
-    setTimeout(async () => {
-    const detections = await faceapi
-      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withFaceExpressions();
-    console.log(detections[0].expressions.neutral);
-    var happy = detections[0].expressions.happy
-    var angry = detections[0].expressions.angry
-    var sad = detections[0].expressions.sad
-    var surprised = detections[0].expressions.surprised
-    var neural = detections[0].expressions.neutral
-    if(happy > 0.3){
-            emotion = "red"
-    } else if(angry > 0.3){
-        emotion = "purple"
-    } else if(sad > 0.3){
-        emotion = "blue"
-    } else if(surprised > 0.3){
-        emotion = "green"
-    } else {
-        emotion = "black"
-    }
-  }, 10);
-    $.ajax({
-        type: 'GET',
-        url: '/test3',
-        dataType : 'JSON',
-        success: function(data){
-            console.log(data.result);
-
-            var dB = document.getElementById("dB").value
-            if(data.result > dB){
-              texts_arr[len] = "<span style=\'font-size:medium;color:"+emotion +"\'>" + texts_arr[len] + "</span>";
-            }else{
-
-              texts_arr[len] = "<span style=\'font-size:small;color:"+emotion +"\'>" + texts_arr[len] + "</span>";
-            }
-            let result = "";
-            for(i = 0 ; i < texts_arr.length; i++) {
-                if (i > 0) {
-
-                    if (texts_arr[i - 1] == texts_arr[i]){
-                        texts_arr.pop
-                    }
-
-                }
-              result += texts_arr[i]+ " ";
-            }
-            p.innerHTML = result.replaceAll("undefined", "");
-        },
-        error: function(request, status, error){
-            alert('ajax 통신 실패')
-            alert(error);
-        }
-    })
-
-    let end = new Date().getTime();  // 종료
-
-    console.log("경과 시간 : " + end +" "+ start); // 경과시간(밀리초)
-  };
-</script>
-
-
-  <style>
-    html {
-      font-size: 10px;
-    }
-
-    body {
-      font-family: 'helvetica neue';
-      font-weight: 200;
-      font-size: 20px;
-    }
-
-    .words {
-      max-width: 500px;
-      margin: 50px auto;
-      background: white;
-      border-radius: 5px;
-      width: 100%;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
-      padding: 1rem 2rem 1rem 5rem;
-      background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
-      background-size: 100% 3rem;
-      position: relative;
-      line-height: 3rem;
-    }
-
-    p {
-      margin: 0 0 3rem;
-    }
-
-    .words:before {
-      content: '';
-      position: absolute;
-      width: 4px;
-      top: 0;
-      left: 30px;
-      bottom: 0;
-      border: 1px solid;
-      border-color: transparent #efe4e4;
-    }
-  </style>
+    <script src='{% static "assets/js/check.js" %}'></script>
 
 </html>

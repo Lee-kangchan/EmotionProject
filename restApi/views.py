@@ -3,6 +3,7 @@ import json
 from django.shortcuts import render
 
 # Create your views here.
+import datetime
 import numpy as np
 import base64
 import pymongo as mongo
@@ -46,7 +47,7 @@ def voice(request):
             '_id': uuid_name,
             'positive': voiceresult['neutral'],
             'negative': voiceresult['fear'],
-            'date': str(today)
+            'date': str(datetime.datetime.now())
         }
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
@@ -73,7 +74,7 @@ def face(request):
         "angry": request.POST['angry'],
         "sad": request.POST['sad'],
         "fearful": request.POST['fearful'],
-        "Date": str(today)
+        "Date": str(datetime.datetime.now())
     }
     # Mongo 클라이언트 생성
     client1 = mongo.MongoClient()

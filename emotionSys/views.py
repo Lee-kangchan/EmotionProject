@@ -5,6 +5,7 @@ import time
 import json
 from random import randint
 
+import datetime
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -36,7 +37,6 @@ def main2(request):
     request.method == 'GET'
     user_email = request.session.get('user')
     print(user_email)
-
     return render(request, 'index2.html', {'field': user_email})
 
 
@@ -44,6 +44,13 @@ def main2(request):
 def dashBoard(request):
     request.method == 'GET'
     user = request.session.get('user')
+
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs["admin"]
+    data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     try:
         user = User.objects.get(email=user)
 
@@ -274,6 +281,12 @@ def v2_main(request):
 
         user_email = request.session.get('user_email')
 
+        gps = request.GET.get('gps')
+        device = request.GET.get('device')
+        client1 = mongo.MongoClient()
+        dbs = client1.log
+        DBLog = dbs["admin"]
+        data = {"log": "main", "date": datetime.datetime.now(), "GPS": gps, "device": device}
         if user_email is None:
             return render(request, 'index.html')
 
@@ -292,6 +305,14 @@ def v2_userlog(request):
 
     # 데이터베이스를 생성 혹은 지정
     dbs = client1.log
+
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs["admin"]
+    data = {"log": "userLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
     id = request.session.get("user")
     id = "admin"
@@ -318,6 +339,15 @@ def v2_facelog(request):
 
     result = DBFace.find()
 
+
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs["admin"]
+    data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
     return render(request, 'facelog.html', {'data': result})
 def v2_voicelog(request):
     request.method == 'GET'
@@ -332,6 +362,15 @@ def v2_voicelog(request):
     DBVoice = db1[id]
 
     result = DBVoice.find()
+
+
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs["admin"]
+    data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
     return render(request, 'voicelog.html', {'data': result})
 
@@ -350,6 +389,15 @@ def v2_signIn(request):
             return render(request, 'index.html', {'error': 'No signIN'})
 
         request.session['user_email'] = user.email
+
+        # 로그 기록 찍기
+        gps = request.GET['gps']
+        device = request.GET['device']
+        client1 = mongo.MongoClient()
+        dbs = client1.log
+        DBLog = dbs["admin"]
+        data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
         return render(request, 'index.html', {'data': user.name})
 
 def v2_signOut(request):
@@ -377,6 +425,14 @@ def v2_signUp(request):
 def v2_fail(request):
     if request.method == 'GET':
         auth_category = Auth_Category.objects.all()
+
+        # 로그 기록 찍기
+        # gps = request.GET['gps']
+        # device = request.GET['device']
+        # client1 = mongo.MongoClient()
+        # dbs = client1.log
+        # DBLog = dbs["admin"]
+        # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
         return render(request, 'check.html', {'data': auth_category})
 
@@ -538,6 +594,13 @@ def v2_dashBoard(request):
 
             DBEmotion = dbs[id]
 
+            # 로그 기록 찍기
+            # gps = request.GET['gps']
+            # device = request.GET['device']
+            # client1 = mongo.MongoClient()
+            # dbs = client1.log
+            # DBLog = dbs["admin"]
+            # data = {"log": "userlog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
             result = DBEmotion.find()
             return render(request, 'profile.html', {"auth_category": auth_category,
                                                     "data": result})

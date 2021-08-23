@@ -363,7 +363,16 @@ def v2_voicelog(request):
 
     result = DBVoice.find()
 
+    client2 = mongo.MongoClient()
+    db2 = client2.voice_count
 
+    id = "admin"
+
+    DBVoice_Cnt = db2[id]
+
+    result_cnt = DBVoice_Cnt.find_one({'_id': id})
+
+    print(result_cnt)
     #로그 기록 찍기
     gps = request.GET.get('gps')
     device = request.GET.get('device')
@@ -372,7 +381,7 @@ def v2_voicelog(request):
     DBLog = dbs["admin"]
     data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-    return render(request, 'voicelog.html', {'data': result})
+    return render(request, 'voicelog.html', {'data': result, 'data_cnt': result_cnt})
 
 
 def v2_signIn(request):
@@ -391,12 +400,12 @@ def v2_signIn(request):
         request.session['user_email'] = user.email
 
         # 로그 기록 찍기
-        gps = request.GET['gps']
-        device = request.GET['device']
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs["admin"]
-        data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        # gps = request.GET['gps']
+        # device = request.GET['device']
+        # client1 = mongo.MongoClient()
+        # dbs = client1.log
+        # DBLog = dbs["admin"]
+        # data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
         return render(request, 'index.html', {'data': user.name})
 
@@ -606,5 +615,4 @@ def v2_dashBoard(request):
                                                     "data": result})
 
         else:
-
             return render(request, 'profile.html')

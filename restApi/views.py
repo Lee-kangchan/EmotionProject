@@ -41,7 +41,7 @@ def voice(request):
 
         id = "admin"
         today = date.today()
-        uuid_name = uuid4().hex;
+        uuid_name = uuid4().hex
 
         data_json = {
             '_id': uuid_name,
@@ -54,6 +54,16 @@ def voice(request):
         db = client1.voice
         DBVoice = db[id]
         DBVoice.insert_one(data_json)
+
+        client2 = mongo.MongoClient()
+        db2 = client2.voice_count
+        DBVoice_Count = db2[id]
+        DBVoice_Count.update({'_id': id}, {
+            '$inc': {'positive_cnt': 1},
+        }, upsert=True)
+        DBVoice_Count.update({'_id': id}, {
+            '$inc': {'negative_cnt': 1},
+        }, upsert=True)
 
         print(data_json)
         return Response({'data': data_json}, status=status.HTTP_200_OK)

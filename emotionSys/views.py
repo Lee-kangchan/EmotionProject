@@ -1,220 +1,144 @@
+import base64
+import hashlib
+import hmac
+import time
+import json
+from random import randint
+
+import datetime
+import requests
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 import pymongo as mongo
-import datetime
+
 # Create your views here.
-from emotionSys.models import User, User_Security, Security
+from requests import Response
+from rest_framework import status
+from rest_framework.utils import json
+
+from emotionSys.models import User, AuthSms, Auth_Category, AuthEmail  # , User_Security, Security
+from my_settings import EMAIL
 
 
 def main(request):
-
-    user_email = request.session.get('user')
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "main", "date" : datetime.datetime.now()}
-        DBLog.insert_one(data)
-
     request.method == 'GET'
+    user_email = request.session.get('user')
     print(user_email)
 
     return render(request, 'index.html', {'field': user_email})
+
+def main2(request):
+    request.method == 'GET'
+    user_email = request.session.get('user')
+    print(user_email)
+    return render(request, 'index2.html', {'field': user_email})
 
 
 @csrf_exempt
 def dashBoard(request):
     request.method == 'GET'
     user = request.session.get('user')
-    user_email = request.session.get('user')
-    gps = request.GET['gps']
-    device = request.GET['device']
 
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs["admin"]
+    data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     try:
-        user = User.objects.get(user_email=user)
-        user_security = User_Security.objects.select_related("security").filter(user=user)
-        print(user_security.values())
-        print(user_security)
+        user = User.objects.get(email=user)
+
+        if user.type == 'admin':
+            auth_category = Auth_Category.objects.all()
+
+            print(auth_category)
+            return render(request, 'dash.html', {"user_data": user, "auth_category": auth_category})
+
+        # else :
+
+        # user_security = User_Security.objects.select_related("security").filter(user=user)
+
+        # return render(request, 'dash.html', {"user_data": user, "user_auth": user_auth})
+
+        # user_security = User_Security.objects.select_related("security").filter(user=user)
+        # print(user_security.values())
+        # print(user_security)
     except User.DoesNotExist:
         return render(request, 'index.html', {'error': 'not connect'})
 
-    return render(request, 'dash.html', {"data": user_security, "user_data": user})
+    # return render(request, 'dash.html', {"data": user_security, "user_data": user})
+    return render(request, 'dash.html', {"user_data": user})
 
 
 def emotion(request):
     request.method == 'GET'
     user_email = request.session.get('user_email')
-    user_email = request.session.get('user')
-    gps = request.GET['gps']
-    device = request.GET['device']
 
-
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "emotion", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
     return render(request, 'check.html', {'field': user_email})
 
 
 def emotion_result(request):
     request.method == 'GET'
-    user_email = request.session.get('user')
-    gps = request.GET['gps']
-    device = request.GET['device']
 
-
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "emotion_result", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
     return render(request, 'result.html')
+
 
 def emotion_face(request):
     request.method == 'GET'
-    user_email = request.session.get('user')
-    gps = request.GET['gps']
-    device = request.GET['device']
 
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "emotion_face", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
     return render(request, 'face.html')
+
+
 def re_auth(request):
     request.method == 'GET'
-    user_email = request.session.get('user')
 
-    gps = request.GET['gps']
-    device = request.GET['device']
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "re_auth", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
-    return render(request, 're_check.html')
+    # user = request.session.get('user')
+    try:
+        # user = User.objects.get(email=user)
+
+        auth_category = Auth_Category.objects.all()
+
+        print(auth_category)
+        return render(request, 're_check.html', {"auth_category": auth_category})
+
+    except User.DoesNotExist:
+        return render(request, 're_check.html', {'error': 'not connect'})
 
 
 def signOut(request):
-    user_email = request.session.get('user')
-    gps = request.GET['gps']
-    device = request.GET['device']
-
-
-    if user_email is not None:
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-        dbs = client1.log
-        DBLog = dbs[user_email]
-        data = {"log": "signOut", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-        DBLog.insert_one(data)
     if request.session.get('user'):
         del (request.session['user'])
     return redirect('main')
 
+
 def phone(request):
     if request.method == 'GET':
-        user_email = request.session.get('user')
-        gps = request.GET['gps']
-        device = request.GET['device']
-
-
-        if user_email is not None:
-            # Mongo 클라이언트 생성
-            client1 = mongo.MongoClient()
-            dbs = client1.log
-            DBLog = dbs[user_email]
-            data = {"log": "phone", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-            DBLog.insert_one(data)
         return render(request, 'phonecheck.html')
+
+
 @csrf_exempt
 def signIn(request):
     if request.method == 'POST':
-        user_email = request.session.get('user')
-
-        if user_email is not None:
-            # Mongo 클라이언트 생성
-            client1 = mongo.MongoClient()
-            dbs = client1.log
-            DBLog = dbs[user_email]
-            data = {"log": "signIn", "date": datetime.datetime.now()}
-            DBLog.insert_one(data)
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
         try:
-            user = User.objects.get(user_email=user_email, user_pw=user_pw)
+            user = User.objects.get(email=user_email, password=user_pw)
 
         except User.DoesNotExist:
             return render(request, 'index.html', {'error': 'not connect'})
 
-        request.session['user'] = user.user_email
+        request.session['user'] = user.email
         return render(request, 'index.html', {'field': user_email})
 
 
-def user_log2(request):
-    if request.method == 'GET':
-        user_email = request.session.get('user')
-        gps = request.GET['gps']
-        device = request.GET['device']
-
-        if user_email is not None:
-            # Mongo 클라이언트 생성
-            client1 = mongo.MongoClient()
-            dbs = client1.log
-            DBLog = dbs[user_email]
-            data = {"log": "user_log", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-            DBLog.insert_one(data);
-        request.method == 'GET'
-        user = request.session.get('user')
-
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-
-        # 호스트와 포트를 지정
-        client2 = mongo.MongoClient('localhost', 27017)
-
-        # 데이터베이스를 생성 혹은 지정
-        dbs = client1.log
-
-        id = request.session.get("user")
-
-        DBEmotion = dbs[id]
-
-        result = DBEmotion.find()
-
-        return render(request, 'user_log2.html', {'data': result})
-
 def user_log(request):
     if request.method == 'GET':
-        user_email = request.session.get('user')
-        gps = request.GET['gps']
-        device = request.GET['device']
-
-        if user_email is not None:
-            # Mongo 클라이언트 생성
-            client1 = mongo.MongoClient()
-            dbs = client1.log
-            DBLog = dbs[user_email]
-            data = {"log": "user_log", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-            DBLog.insert_one(data);
         request.method == 'GET'
         user = request.session.get('user')
 
@@ -236,5 +160,478 @@ def user_log(request):
         DBEmotion = dbs[id]
 
         result = DBEmotion.find()
-
         return render(request, 'user_log.html', {'data': result})
+
+
+def email_sign(request):
+    if request.method == 'GET':
+        current_site = get_current_site(request)
+        print(current_site)
+
+        domain = current_site.domain
+        mail_title = "이메일 2차 인증을 완료해주세요"
+        message_data = "https://192.168.64.94:8000/users/check"
+        email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+
+        email.send()
+
+        return JsonResponse({"message": "SUCCESS"}, status=200)
+
+
+def activate(request):
+    if request.method == 'GET':
+        return redirect(EMAIL['REDIRECT_PAGE'])
+
+
+def check_sms(request):
+    if request.method == 'POST':
+        user_email = request.session.get('user')
+        input_data = request.POST['number']
+
+        user = User.objects.get(email=user_email)
+        auth = AuthSms.objects.get(auth_phone=user.phone)
+
+        if int(input_data) == int(auth.auth_number):
+            return render(request, 'approval.html')
+
+        else:
+            return render(request, 're_check.html')
+
+
+timestamp = int(time.time() * 1000)
+timestamp = str(timestamp)
+
+url = "https://sens.apigw.ntruss.com"
+requestUrl1 = "/sms/v2/services/"
+requestUrl2 = "/messages"
+serviceId = "ncp:sms:kr:266490177325:dsu_emotion"
+access_key = "QRqgBlLhOPVszA8iAyXJ"
+
+uri = requestUrl1 + serviceId + requestUrl2
+apiUrl = url + uri
+
+
+def make_signature():
+    secret_key = "X8bxpHlTti6oFR3dg7cND3WwqquCV5lIb7OGy1qT"
+    secret_key = bytes(secret_key, 'UTF-8')
+    method = "POST"
+    message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+    message = bytes(message, 'UTF-8')
+
+    key = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+
+    return key
+
+
+class AuthSmsView(View):
+
+    # def send_sms(self, auth_phone, auth_number):
+    #
+    #     messages = {"to": str(auth_phone)}
+    #
+    #     data = {
+    #         'type': 'SMS',
+    #         'contentType': 'COMM',
+    #         'countryCode': '82',
+    #         'from': "01093964847",
+    #         'content': "인증번호 : " + str(auth_number),
+    #         'messages': [messages]
+    #     }
+    #     body2 = json.dumps(data)
+    #
+    #     headers = {
+    #         'Content-Type': 'application/json; charset=utf-8',
+    #         'x-ncp-apigw-timestamp': timestamp,
+    #         'x-ncp-iam-access-key': access_key,
+    #         'x-ncp-apigw-signature-v2': make_signature(),
+    #     }
+    #
+    #     res = requests.post(apiUrl, headers=headers, data=body2)
+
+    def get(self, request):
+        try:
+            user_email = request.session.get('user')
+            user = User.objects.get(email=user_email)
+
+            # input_data = json.loads(request.body)
+            # input_phone_number = input_data['auth_phone']
+            input_phone_number = user.phone
+            created_auth_number = randint(1000, 10000)
+            exist_phone_number = AuthSms.objects.get(auth_phone=input_phone_number)
+            exist_phone_number.auth_number = created_auth_number
+            exist_phone_number.save()
+            self.send_sms(auth_phone=input_phone_number, auth_number=created_auth_number)
+
+            return render(request, 'authSms.html')
+
+        except AuthSms.DoesNotExist:
+            AuthSms.objects.create(
+                auth_phone=input_phone_number,
+                auth_number=created_auth_number
+            ).save()
+
+            self.send_sms(auth_phone=input_phone_number, auth_number=created_auth_number)
+
+            return render(request, 'authSms.html')
+
+
+def v2_main(request):
+    if request.method == 'GET':
+
+        user_email = request.session.get('user_email')
+
+        gps = request.GET.get('gps')
+        device = request.GET.get('device')
+        client1 = mongo.MongoClient()
+        dbs = client1.log
+        DBLog = dbs["admin"]
+        data = {"log": "main", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        if user_email is None:
+            return render(request, 'index.html')
+
+        else:
+            user = User.objects.get(email=user_email)
+            request.session['user_email'] = user.email
+
+
+            print(user.name)
+            return render(request, 'index.html', {'data': user.name, 'type' : request.session.get('type')})
+
+
+def v2_userManager(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+
+    # 데이터베이스를 생성 혹은 지정
+    dbs = client1.log
+    id = request.session.get("user_email")
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "userManager", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+    DBEmotion = dbs[id]
+
+    DBEmotion.insert_one(data)
+    result = User.objects.all()
+    print(result[0].email)
+    return render(request, 'userManager.html', {'data': result})
+
+
+
+def v2_userlog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+
+    # 데이터베이스를 생성 혹은 지정
+    dbs = client1.log
+    id = request.session.get("user_email")
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "userLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+    DBEmotion = dbs[id]
+
+    result = DBEmotion.find()
+    DBEmotion.insert_one(data);
+    return render(request, 'userlog.html', {'data': result})
+
+
+def v2_facelog(request):
+    request.method == 'GET'
+
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    # 데이터베이스를 생성 혹은 지정
+    db = client1.face
+
+    id = request.session.get("user_email")
+    print(id)
+    DBFace = db[id]
+
+    result = DBFace.find()
+
+
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    dbslog = dbs[id];
+    data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    dbslog.insert_one(data)
+    return render(request, 'facelog.html', {'data': result, 'data2' : result})
+def v2_voicelog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    db1 = client1.voice
+    id = request.session.get("user_email")
+
+    DBVoice = db1[id]
+
+    result = DBVoice.find()
+
+    client2 = mongo.MongoClient()
+    db2 = client2.voice_count
+
+    DBVoice_Cnt = db2[id]
+
+    result_cnt = DBVoice_Cnt.find_one({'_id': id})
+
+    print(result_cnt)
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    DBLog.insert_one(data)
+    return render(request, 'voicelog.html', {'data': result, 'data_cnt': result_cnt})
+
+
+def v2_signIn(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+
+    elif request.method == 'POST':
+        print("sign")
+        user_email = request.POST['user_email']
+        user_pw = request.POST['user_pw']
+        try:
+            user = User.objects.get(email=user_email, password=user_pw)
+
+        except User.DoesNotExist:
+            return render(request, 'index.html', {'error': 'No signIN'})
+
+        request.session['user_email'] = user.email
+        request.session['type'] = user.type
+        # 로그 기록 찍기
+        # gps = request.GET['gps']
+        # device = request.GET['device']
+        # client1 = mongo.MongoClient()
+        # dbs = client1.log
+        # DBLog = dbs["admin"]
+        # data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+        return render(request, 'index.html', {'data': user.name})
+
+def v2_signOut(request):
+    if request.session.get('user'):
+        del (request.session['user'])
+    return redirect('main')
+
+def v2_signUp(request):
+    if request.method == 'GET':
+        return render(request, 'register.html')
+
+
+    elif request.method == 'POST':
+        user_email = request.POST['user_email']
+        user_pw = request.POST['user_pw']
+
+        User.objects.create(
+            email=user_email,
+            password=user_pw
+        ).save()
+
+        return render(request, 'index.html')
+
+
+def v2_fail(request):
+    if request.method == 'GET':
+        auth_category = Auth_Category.objects.all()
+
+        # 로그 기록 찍기
+        # gps = request.GET['gps']
+        # device = request.GET['device']
+        # client1 = mongo.MongoClient()
+        # dbs = client1.log
+        # DBLog = dbs["admin"]
+        # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+        return render(request, 'check.html', {'data': auth_category})
+
+
+def v2_emailCheck(request):
+    if request.method == 'GET':
+
+        try:
+            user_email = request.session.get('user_email')
+            user = User.objects.get(email=user_email)
+
+            print(user_email)
+            if user is None:
+                print('not')
+                return render(request, 'check.html')
+
+            user_email = user.email
+            created_auth_number = randint(1000, 10000)
+            auth_email = AuthEmail.objects.get(auth_email=user_email)
+            auth_email.auth_number = created_auth_number
+            auth_email.save()
+
+            mail_title = "[데모 시스템] 이메일 2차 인증"
+            message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
+            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email.send()
+
+            return render(request, 'emailCheck.html', {'data': user_email})
+
+        except AuthEmail.DoesNotExist:
+            created_auth_number = randint(1000, 10000)
+            AuthEmail.objects.create(
+                auth_email=user_email,
+                auth_number=created_auth_number
+            ).save()
+
+            mail_title = "[데모 시스템] 이메일 2차 인증"
+            message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
+            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email.send()
+
+            return render(request, 'emailCheck.html', {'data': user_email})
+
+    elif request.method == 'POST':
+        print('post')
+        user_email = request.session.get('user_email')
+        input_data = request.POST['number']
+
+        user = User.objects.get(email=user_email)
+        email = AuthEmail.objects.get(auth_email=user.email)
+
+        if int(input_data) == int(email.auth_number):
+            print('collect')
+            return render(request, 'index.html', {'data': user.name})
+
+        else:
+            print('fail')
+            return render(request, 'check.html')
+
+class v2_phoneCheck(View):
+
+    def send_sms(self, auth_phone, auth_number):
+
+        messages = {"to": str(auth_phone)}
+
+        data = {
+            'type': 'SMS',
+            'contentType': 'COMM',
+            'countryCode': '82',
+            'from': "01093964847",
+            'content': "인증번호 : " + str(auth_number),
+            'messages': [messages]
+        }
+        body2 = json.dumps(data)
+
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'x-ncp-apigw-timestamp': timestamp,
+            'x-ncp-iam-access-key': access_key,
+            'x-ncp-apigw-signature-v2': make_signature(),
+        }
+
+        res = requests.post(apiUrl, headers=headers, data=body2)
+
+    def get(self, request):
+
+        try:
+            user_email = request.session.get('user_email')
+            user = User.objects.get(email=user_email)
+
+            if user is None:
+                return render(request, 'check.html')
+
+            # input_data = json.loads(request.body)
+            # input_phone_number = input_data['auth_phone']
+            input_phone_number = user.phone
+            created_auth_number = randint(1000, 10000)
+            exist_phone_number = AuthSms.objects.get(auth_phone=input_phone_number)
+            exist_phone_number.auth_number = created_auth_number
+            exist_phone_number.save()
+            self.send_sms(auth_phone=input_phone_number, auth_number=created_auth_number)
+
+            return render(request, 'phoneCheck.html', {'data': user.phone})
+
+        except AuthSms.DoesNotExist:
+            AuthSms.objects.create(
+                auth_phone=input_phone_number,
+                auth_number=created_auth_number
+            ).save()
+
+            self.send_sms(auth_phone=input_phone_number, auth_number=created_auth_number)
+
+            return render(request, 'phoneCheck.html', {'data': user.phone})
+
+
+    def post(self, request):
+
+        user_email = request.session.get('user_email')
+        input_data = request.POST['number']
+
+        user = User.objects.get(email=user_email)
+        auth = AuthSms.objects.get(auth_phone=user.phone)
+
+        if int(input_data) == int(auth.auth_number):
+            print('collect')
+            return render(request, 'index.html', {'data': user.name})
+
+        else:
+            print('fail')
+            return render(request, 'check.html')
+
+
+# def v2_locateCheck(request):
+#     if request.method == 'GET':
+#
+#         if(false)
+#             return render(request, 'check.html')
+#
+#         else
+#             return render(request, 'index.html')
+
+
+def v2_dashBoard(request):
+    if request.method == 'GET':
+
+        user_email = request.session.get('user_email')
+
+        user = User.objects.get(email=user_email)
+
+        if user.type == 'admin':
+            auth_category = Auth_Category.objects.all()
+
+            client1 = mongo.MongoClient()
+            client2 = mongo.MongoClient('localhost', 27017)
+
+            dbs = client1.emotion_log
+
+            id = request.session.get("user_email")
+
+            DBEmotion = dbs[id]
+
+            # 로그 기록 찍기
+            # gps = request.GET['gps']
+            # device = request.GET['device']
+            # client1 = mongo.MongoClient()
+            # dbs = client1.log
+            # DBLog = dbs["admin"]
+            # data = {"log": "userlog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+            result = DBEmotion.find()
+            return render(request, 'profile.html', {"auth_category": auth_category,
+                                                    "data": result})
+
+        else:
+            return render(request, 'profile.html')

@@ -18,7 +18,7 @@ from django.urls import path
 from django.conf.urls import include
 
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-    path('v1/', include('restApi.urls'), name="restApi"), #include 함수를 통해 api_usr의 urls.py로 라우팅 해준다.
+    path('admin', admin.site.urls),
+    path('v2/', include('restApi.urls')), #include 함수를 통해 api_usr의 urls.py로 라우팅 해준다.
     path('', include('emotionSys.urls'), name="emotionSys"),
 ]

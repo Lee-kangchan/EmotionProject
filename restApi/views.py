@@ -1,10 +1,16 @@
+import json
+
 from django.shortcuts import render
 
 # Create your views here.
+import datetime
 import numpy as np
 import base64
 import pymongo as mongo
 from datetime import date
+
+from uuid import uuid4
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -12,12 +18,11 @@ from voiceEmotion.main import emotionCheck
 from django import http
 import wave
 from faceEmotion.face import faceEmotion
-from django.http import JsonResponse
 
 
-from faceEmotion.face import faceEmotion
+@csrf_exempt
 @api_view(['GET', 'POST'])
-def emotion(request):
+def voice(request):
     if request.method == "POST":
 
         # 음성 서버에 저장하는 작업
@@ -32,134 +37,66 @@ def emotion(request):
         blob = audio_file.read()
         audio.writeframes(blob)
 
-        if audio_file is None:
-            return http.HttpResponseBadRequest()
-
-        # Mongo 클라이언트 생성
-        client1 = mongo.MongoClient()
-
-        # 호스트와 포트를 지정
-        client2 = mongo.MongoClient('localhost', 27017)
-
-        # 데이터베이스를 생성 혹은 지정
-        db = client1.face
-        db1 = client1.voice
-        dbs = client1.emotion_log
-
-        id = request.session.get("user")
-
-        DBFace = db[id]
-        DBVoice = db1[id]
-        DBEmotion = dbs[id]
-
-        # 음성 체킹
         voiceresult = emotionCheck()
 
-        # Base 64 디코딩
-        print(request.POST['imgSrc'])
-        image = request.POST['imgSrc'].split(',')[1]
-        decoded_data = base64.b64decode(image)
-        np_data = np.fromstring(decoded_data, np.uint8)
-        faceYN, Fearful, Angry, Disgusting, Happy, Sad, Surprise, Neutral \
-            = faceEmotion(request.session.get("user"), np_data)
-
-        # 측정 값이 잘못된 경우 데이터 저장 예외처리
+        print("hello voice")
+        id = request.session.get("user_email")
         today = date.today()
-        if Fearful != 0 :
-            data = {"Face_Fearful": Fearful, "Face_Angry": Angry, "Face_Disgusting": Disgusting, "Face_Happy": Happy,
-                    "Face_Sad": Sad, "Face_Surprise": Surprise, "Face_Neutral": Neutral , "Date": str(today)}
-            # 년 월 일 시 분 초 데이터 추가 (예정)
-            DBFace.insert_one(data)
-        if voiceresult['fear'] != 0 :
-            data2 = {"Voice_Fear": float(voiceresult['fear']), "Voice_Neutral": float(voiceresult['neutral']), "Date": str(today)}
-            # 년 월 일 시 분 초 데이터 추가 (예정)
-            DBVoice.insert_one(data2)
-        if voiceresult['fear'] != 0 and Fearful != 0 :
-            data3 = {"Face_Fearful": Fearful, "Face_Angry": Angry, "Face_Disgusting": Disgusting, "Face_Happy": Happy,
-                    "Face_Sad": Sad, "Face_Surprise": Surprise, "Face_Neutral": Neutral, "Voice_Fear": float(voiceresult['fear']), "Voice_Neutral": float(voiceresult['neutral']), "Date": str(today)}
-            DBEmotion.insert_one(data3)
+        uuid_name = uuid4().hex
 
-        if voiceresult['neutral'] > 0.70:
-            voiceYN = 'yes'
-        else:
-            voiceYN = 'no'
-
-        data = {
-            'faceYN': faceYN,
-            'voiceYN': voiceYN,
-            'face_positive': 1 - Fearful,
-            'face_negative': Fearful,
-            'voice_positive': voiceresult['neutral'],
-            'voice_negative': voiceresult['fear']
+        data_json = {
+            '_id': uuid_name,
+            'positive': voiceresult['neutral'],
+            'negative': voiceresult['fear'],
+            'date': str(datetime.datetime.now())
         }
+        # Mongo 클라이언트 생성
+        client1 = mongo.MongoClient()
+        db = client1.voice
+        DBVoice = db[id]
+        DBVoice.insert_one(data_json)
 
-        # 만약 설정 조건이 맞을 경우 yes
-        if faceYN == 'yes' and voiceYN == 'yes':
-            return Response({'data': data}, status=status.HTTP_200_OK)
-        # 아닐 경우 no
-        else:
-            return Response({'data': data}, status=status.HTTP_200_OK)
+        client2 = mongo.MongoClient()
+        db2 = client2.voice_count
+        DBVoice_Count = db2[id]
+        DBVoice_Count.update({'_id': id}, {
+            '$inc': {'positive_cnt': 1},
+        }, upsert=True)
+        DBVoice_Count.update({'_id': id}, {
+            '$inc': {'negative_cnt': 1},
+        }, upsert=True)
 
-    # elif request.method == "POST":
-    #     audio_file = request.FILES.get('audio_data', None)
+        print(data_json)
+        return Response({'data': data_json}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+def face(request):
     #
-    #     obj = wave.open(audio_file, 'r')
-    #     audio = wave.open('voiceEmotion/test.wav', 'wb')
-    #     audio.setnchannels(obj.getnchannels())
-    #     audio.setnframes(obj.getnframes())
-    #     audio.setsampwidth(obj.getsampwidth())
-    #     audio.setframerate(obj.getframerate())
-    #     blob = audio_file.read()
-    #     audio.writeframes(blob)
-    #
-    #     if audio_file is None:
-    #         return http.HttpResponseBadRequest()
-    #
-    #     # voiceresult = emotionCheck()
-    #
-    #     return Response({'data': "success"}, status=status.HTTP_200_OK)
-
-
-# @api_view(['GET', 'POST'])
-# def face(request):
-#     print(request.POST['imgSrc'])
-#     image = request.POST['imgSrc'].split(',')[1]
-#     decoded_data = base64.b64decode(image)
-#     np_data = np.fromstring(decoded_data, np.uint8)
-#     print("sdfskodfksdf")
-#     faceYN, faceData = faceEmotion(request.session.get("user"), np_data)
-#     data = {
-#         'yn': faceYN,
-#         'face_positive': 1 - faceData,
-#         'face_negative': faceData,
-#     }
-#     print(data)
-#     return Response({'data': data}, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def ip(request):
-    request.session['ip'] = request.get['ip'];
-
-@api_view(['GET','POST'])
-def gps(request):
-    id = request.session.get("user")
-
+    # id = request.session.get("user")
+    id = request.session.get("user_email")
+    today = date.today()
+    uuid_name = uuid4().hex;
+    data_json = {
+        "_id": uuid_name,
+        "neutral": request.POST['neutral'],
+        "happy": request.POST['happy'],
+        "neutral": request.POST['neutral'],
+        "angry": request.POST['angry'],
+        "sad": request.POST['sad'],
+        "fearful": request.POST['fearful'],
+        "Date": str(datetime.datetime.now())
+    }
+    print("hello face")
+    # Mongo 클라이언트 생성
     client1 = mongo.MongoClient()
-    # 호스트와 포트를 지정
-    db = client1.log # db = client1["dsdb"]
-    DBSad = db[id]
-    t = DBSad.find()
-    for x in t:
-        if x['log'] == 'main':
-            continue
-        print(x)
-        x['GPS']
-        if x['GPS'] == request.GET['gps'] and x['GPS'] != "undefined":
-            if x['device'] == request.GET['device']:
-                return Response({'data': "Yes"}, status=status.HTTP_200_OK)
+    db = client1.face
+    DBFace = db[id]
+    DBFace.insert_one(data_json)
 
-    return Response({'data': "no"}, status=status.HTTP_200_OK)
+    print(data_json)
+    return Response({'data': data_json}, status=status.HTTP_200_OK)
+
 
 @api_view(['UPDATE'])
 def mypage_emotion(request):

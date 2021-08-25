@@ -39,7 +39,8 @@ def voice(request):
 
         voiceresult = emotionCheck()
 
-        id = "admin"
+        print("hello voice")
+        id = request.session.get("user_email")
         today = date.today()
         uuid_name = uuid4().hex
 
@@ -73,7 +74,7 @@ def voice(request):
 def face(request):
     #
     # id = request.session.get("user")
-    id = "admin"
+    id = request.session.get("user_email")
     today = date.today()
     uuid_name = uuid4().hex;
     data_json = {
@@ -86,6 +87,7 @@ def face(request):
         "fearful": request.POST['fearful'],
         "Date": str(datetime.datetime.now())
     }
+    print("hello face")
     # Mongo 클라이언트 생성
     client1 = mongo.MongoClient()
     db = client1.face

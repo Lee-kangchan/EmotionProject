@@ -111,7 +111,7 @@ $("#main").click(function (){
          navigator.geolocation.getCurrentPosition(function(position) {
             gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-            location.href = "/main?gps="+gps+"&device="+device;
+            location.href = "/v2/main?gps="+gps+"&device="+device;
         }, function(error) {
           console.error(error);
         }, {
@@ -123,13 +123,13 @@ $("#main").click(function (){
           gps = "X";
       }
 })
-$("#log1").click(function (){
+$("#userManager").click(function(){
     device = mobilePcCheck();
      if (navigator.geolocation) { // GPS를 지원하면
          navigator.geolocation.getCurrentPosition(function(position) {
             gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-            location.href = "/userlog?gps="+gps+"&device="+device;
+            location.href = "/v2/userManager?gps="+gps+"&device="+device;
         }, function(error) {
           console.error(error);
         }, {
@@ -141,13 +141,49 @@ $("#log1").click(function (){
           gps = "X";
       }
 })
-$("#log2").click(function (){
+$("#voicelog").click(function (){
     device = mobilePcCheck();
      if (navigator.geolocation) { // GPS를 지원하면
          navigator.geolocation.getCurrentPosition(function(position) {
             gps = position.coords.latitude + ' ' + position.coords.longitude;
 
-            location.href = "/userlog?gps="+gps+"&device="+device;
+            location.href = "/v2/voiceLog?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+})
+$("#facelog").click(function (){
+    device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+
+            location.href = "/v2/faceLog?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+})
+$("#userlog").click(function (){
+    device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
+
+            location.href = "/v2/userLog?gps="+gps+"&device="+device;
         }, function(error) {
           console.error(error);
         }, {

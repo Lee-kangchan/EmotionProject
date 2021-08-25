@@ -70,7 +70,7 @@ function createDownloadLink(blob) {
 	upload.innerHTML = "Upload";
 	var xhr=new XMLHttpRequest();
 	var fd=new FormData();
-
+	console.log("목소리")
 	fd.append("audio_data", blob, filename);
 
 	$.ajax({

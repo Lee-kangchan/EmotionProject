@@ -160,7 +160,6 @@ def user_log(request):
         DBEmotion = dbs[id]
 
         result = DBEmotion.find()
-
         return render(request, 'user_log.html', {'data': result})
 
 
@@ -294,8 +293,36 @@ def v2_main(request):
             user = User.objects.get(email=user_email)
             request.session['user_email'] = user.email
 
+
             print(user.name)
-            return render(request, 'index.html', {'data': user.name})
+            return render(request, 'index.html', {'data': user.name, 'type' : request.session.get('type')})
+
+
+def v2_userManager(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+
+
+    # 데이터베이스를 생성 혹은 지정
+    dbs = client1.log
+    id = request.session.get("user_email")
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "userManager", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+    DBEmotion = dbs[id]
+
+    DBEmotion.insert_one(data)
+    result = User.objects.all()
+    print(result[0].email)
+    return render(request, 'userManager.html', {'data': result})
+
+
 
 def v2_userlog(request):
     request.method == 'GET'
@@ -305,23 +332,19 @@ def v2_userlog(request):
 
     # 데이터베이스를 생성 혹은 지정
     dbs = client1.log
-
+    id = request.session.get("user_email")
     #로그 기록 찍기
     gps = request.GET.get('gps')
     device = request.GET.get('device')
     client1 = mongo.MongoClient()
     dbs = client1.log
-    DBLog = dbs["admin"]
+    DBLog = dbs[id]
     data = {"log": "userLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-    id = request.session.get("user")
-    id = "admin"
-    # DBFace = db[id]
-    # DBVoice = db1[id]
     DBEmotion = dbs[id]
 
     result = DBEmotion.find()
-
+    DBEmotion.insert_one(data);
     return render(request, 'userlog.html', {'data': result})
 
 
@@ -333,8 +356,8 @@ def v2_facelog(request):
     # 데이터베이스를 생성 혹은 지정
     db = client1.face
 
-    id = request.session.get("user")
-    id = "admin"
+    id = request.session.get("user_email")
+    print(id)
     DBFace = db[id]
 
     result = DBFace.find()
@@ -345,28 +368,23 @@ def v2_facelog(request):
     device = request.GET.get('device')
     client1 = mongo.MongoClient()
     dbs = client1.log
-    DBLog = dbs["admin"]
+    dbslog = dbs[id];
     data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-
-    return render(request, 'facelog.html', {'data': result})
+    dbslog.insert_one(data)
+    return render(request, 'facelog.html', {'data': result, 'data2' : result})
 def v2_voicelog(request):
     request.method == 'GET'
     # Mongo 클라이언트 생성
     client1 = mongo.MongoClient()
-
     db1 = client1.voice
+    id = request.session.get("user_email")
 
-    id = request.session.get("user")
-    id = "admin"
-    # DBFace = db[id]
     DBVoice = db1[id]
 
     result = DBVoice.find()
 
     client2 = mongo.MongoClient()
     db2 = client2.voice_count
-
-    id = "admin"
 
     DBVoice_Cnt = db2[id]
 
@@ -378,9 +396,9 @@ def v2_voicelog(request):
     device = request.GET.get('device')
     client1 = mongo.MongoClient()
     dbs = client1.log
-    DBLog = dbs["admin"]
+    DBLog = dbs[id]
     data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
-
+    DBLog.insert_one(data)
     return render(request, 'voicelog.html', {'data': result, 'data_cnt': result_cnt})
 
 
@@ -389,6 +407,7 @@ def v2_signIn(request):
         return render(request, 'login.html')
 
     elif request.method == 'POST':
+        print("sign")
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
         try:
@@ -398,7 +417,7 @@ def v2_signIn(request):
             return render(request, 'index.html', {'error': 'No signIN'})
 
         request.session['user_email'] = user.email
-
+        request.session['type'] = user.type
         # 로그 기록 찍기
         # gps = request.GET['gps']
         # device = request.GET['device']

@@ -15,6 +15,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from voiceEmotion.main import emotionCheck
+from faceEmotion.face_Recognition import myface
 from django import http
 import wave
 from faceEmotion.face import faceEmotion
@@ -74,7 +75,13 @@ def voice(request):
 def face(request):
     #
     # id = request.session.get("user")
+    image = request.POST['faceURL'].split(',')[1]
+    decoded_data = base64.b64decode(image)
+    np_data = np.fromstring(decoded_data, np.uint8)
+
+
     id = request.session.get("user_email")
+    result = myface(np_data,id)
     today = date.today()
     uuid_name = uuid4().hex;
     data_json = {
@@ -95,7 +102,7 @@ def face(request):
     DBFace.insert_one(data_json)
 
     print(data_json)
-    return Response({'data': data_json}, status=status.HTTP_200_OK)
+    return Response({'data': data_json, 'face': result}, status=status.HTTP_200_OK)
 
 
 @api_view(['UPDATE'])

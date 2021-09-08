@@ -292,10 +292,10 @@ def v2_main(request):
         else:
             user = User.objects.get(email=user_email)
             request.session['user_email'] = user.email
-
+            request.session['user_name'] = user.name
 
             print(user.name)
-            return render(request, 'index.html', {'data': user.name, 'type' : request.session.get('type')})
+            return render(request, 'index.html', {'user': user.name,'data': user.name, 'type' : request.session.get('type')})
 
 
 def v2_userManager(request):
@@ -313,7 +313,8 @@ def v2_userManager(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "userManager", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
+    data = {"log": "userManager", 'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
@@ -339,7 +340,7 @@ def v2_userlog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "userLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userLog", 'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
@@ -371,7 +372,7 @@ def v2_facelog(request):
     dbslog = dbs[id];
     data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     dbslog.insert_one(data)
-    return render(request, 'facelog.html', {'data': result, 'data2' : result})
+    return render(request, 'facelog.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': result, 'data2' : result})
 def v2_voicelog(request):
     request.method == 'GET'
     # Mongo 클라이언트 생성
@@ -399,7 +400,7 @@ def v2_voicelog(request):
     DBLog = dbs[id]
     data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     DBLog.insert_one(data)
-    return render(request, 'voicelog.html', {'data': result, 'data_cnt': result_cnt})
+    return render(request, 'voicelog.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': result, 'data_cnt': result_cnt})
 
 
 def v2_signIn(request):
@@ -429,9 +430,9 @@ def v2_signIn(request):
         return render(request, 'index.html', {'data': user.name})
 
 def v2_signOut(request):
-    if request.session.get('user'):
-        del (request.session['user'])
-    return redirect('main')
+    if request.session.get('user_email'):
+        del (request.session['user_email'])
+    return redirect('v2_main')
 
 def v2_signUp(request):
     if request.method == 'GET':
@@ -488,7 +489,7 @@ def v2_emailCheck(request):
             email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
             email.send()
 
-            return render(request, 'emailCheck.html', {'data': user_email})
+            return render(request, 'emailCheck.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': user_email})
 
         except AuthEmail.DoesNotExist:
             created_auth_number = randint(1000, 10000)
@@ -514,7 +515,7 @@ def v2_emailCheck(request):
 
         if int(input_data) == int(email.auth_number):
             print('collect')
-            return render(request, 'index.html', {'data': user.name})
+            return render(request, 'index.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': user.name})
 
         else:
             print('fail')

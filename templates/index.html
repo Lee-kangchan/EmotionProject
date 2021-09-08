@@ -46,6 +46,7 @@
 <body id="page-top">
     <div id="wrapper">
         <video id="video" width="720" height="560" autoplay muted style="visibility: hidden ;position: fixed"></video>
+        <canvas id="canvas_video"style="display: none; visibility: hidden ;position: fixed"></canvas>
         <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
         <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
             <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
@@ -350,14 +351,6 @@
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
-     <div id="results">
-        <div>
-            <video autoplay=""  style="visibility: hidden; position: absolute"></video>
-        </div>
-      <div>
-            <canvas  style="visibility: hidden; position: absolute" id="grabFrameCanvas" width="500" height="500"></canvas>
-        </div>
-    </div>
     <script src='{% static "assets/js/app.js" %}'></script>
     <div id="formats"></div>
 
@@ -401,14 +394,20 @@
               .withFaceExpressions();
             var data = detections[0].expressions.fearful;
             console.log(parseFloat(data).toFixed(8));
-            var fd=new FormData();
 
-           fd.append("neutral", parseFloat(detections[0].expressions.neutral).toFixed(8));
-           fd.append("happy", parseFloat(detections[0].expressions.happy).toFixed(8));
-           fd.append("angry", parseFloat(detections[0].expressions.angry).toFixed(8));
-           fd.append("sad", parseFloat(detections[0].expressions.sad).toFixed(8));
-           fd.append("fearful", parseFloat(detections[0].expressions.fearful).toFixed(8));
-          $.ajax({
+            const canvas = document.getElementById("canvas_video");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0,canvas.width, canvas.height);
+            const dataURL = canvas.toDataURL();
+            var fd=new FormData();
+            fd.append("faceURL", dataURL)
+            fd.append("neutral", parseFloat(detections[0].expressions.neutral).toFixed(8));
+            fd.append("happy", parseFloat(detections[0].expressions.happy).toFixed(8));
+            fd.append("angry", parseFloat(detections[0].expressions.angry).toFixed(8));
+            fd.append("sad", parseFloat(detections[0].expressions.sad).toFixed(8));
+            fd.append("fearful", parseFloat(detections[0].expressions.fearful).toFixed(8));
+            $.ajax({
                 headers: {'X-CSRFToken': csrftoken},
                 type : 'POST',
                 url : '/v2/face',
@@ -418,7 +417,7 @@
                 contentType: false,    // 반드시 작성
                 success : function(result){
                     fear = parseFloat(detections[0].expressions.fearful).toFixed(8)
-                    if(fear > 0.15) {``
+                    if(fear > 0.15 || result.face == 'X') {``
                         alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
                         window.location.href = '/v2/fail';
                     }
@@ -429,7 +428,7 @@
                 }
             });
 
-          }, 3000);
+          }, 10000);
 
         //미디어 허용
         if (navigator.mediaDevices.getUserMedia) {

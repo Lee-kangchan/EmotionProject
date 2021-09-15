@@ -313,8 +313,7 @@ def v2_userManager(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-
-    data = {"log": "userManager", 'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userManager", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
@@ -463,7 +462,7 @@ def v2_fail(request):
         # DBLog = dbs["admin"]
         # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'check.html', {'data': auth_category})
+        return render(request, 'check.html', {'data': auth_category, 'login': request.session.get('user_email')})
 
 
 def v2_emailCheck(request):

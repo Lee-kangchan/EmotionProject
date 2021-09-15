@@ -49,7 +49,7 @@
         <canvas id="canvas_video"style="display: none; visibility: hidden ;position: fixed"></canvas>
         <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
         <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="main">
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span>00 은행 시스템<br></span></div>
                 </a>
@@ -62,11 +62,27 @@
                     {% if type %}
                         {% if type == '1' %}
                         <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
-                            {% endif %}
+                        {% endif %}
                     {% endif %}
-                    <li class="nav-item"></li>
+                    <li class="nav-item">
+                    </li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+                {% if data %}
+                <div>
+                     <div class="spinner-grow text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div></div>
+                <div class = "fw-bold m-0 FontColorBlack">측정 중 입니다..</div>
+                {% endif %}
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -287,56 +303,6 @@
                                 <div class="card-body">
                                     <div class="chart-area"><canvas data-bss-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Direct&quot;,&quot;Social&quot;,&quot;Referral&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#4e73df&quot;,&quot;#1cc88a&quot;,&quot;#36b9cc&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[&quot;50&quot;,&quot;30&quot;,&quot;15&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;labels&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}},&quot;title&quot;:{&quot;fontStyle&quot;:&quot;normal&quot;}}}"></canvas></div>
                                     <div class="text-center small mt-4"><span class="me-2"><i class="fas fa-circle text-primary"></i>&nbsp;Direct</span><span class="me-2"><i class="fas fa-circle text-success"></i>&nbsp;Social</span><span class="me-2"><i class="fas fa-circle text-info"></i>&nbsp;Refferal</span></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="row">
-                                <div class="col-lg-6 mb-4">
-                                    <div class="bg-gray-300 card textwhite text-white shadow ">
-                                        <div class="card-body BackgroundColorGreen2">
-                                            <p class="m-0">감정 기반 재인증</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorBlue">
-                                        <div class="card-body BackgroundColorBlue">
-                                            <p class="m-0">이메일 재인증</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorGreen">
-                                        <div class="card-body BackgroundColorGreen">
-                                            <p class="m-0">위치기반 재인증</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorMint">
-                                        <div class="card-body BackgroundColorMint">
-                                            <p class="m-0">휴대폰 번호 재인증</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorPink">
-                                        <div class="card-body BackgroundColorPink">
-                                            <p class="m-0">Danger</p>
-                                            <p class="text-white-50 small m-0">#e74a3b</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorYellow">
-                                        <div class="card-body BackgroundColorYellow">
-                                            <p class="m-0">Secondary</p>
-                                            <p class="text-white-50 small m-0">#858796</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

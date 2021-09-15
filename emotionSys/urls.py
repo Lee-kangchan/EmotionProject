@@ -3,22 +3,22 @@ from . import views
 from .views import AuthSmsView, v2_phoneCheck
 
 urlpatterns = [
-    path('main', views.main, name='main'),
-    path('main2', views.main2, name='main2'), # 예시 나중에 삭제
-    path('emotion', views.emotion, name='emotion'),
-    path('face2', views.emotion_face, name='emotion_face'),
-    path('emotion/result', views.emotion_result, name='emotion_result'),
-    path('signIn', views.signIn, name='signIn'),
-    path('signOut', views.signOut, name='signOut'),
-    path('phone', views.phone, name='phone'),
-    # path('singUp/', views.singUp, name='singUp'),
-    path('dashBoard', views.dashBoard, name='dashBoard'),
-    path('re_auth', views.re_auth, name='re_auth'),
-    path('userlog', views.user_log, name='user_log'),
-    path('emailsign', views.email_sign),
-    path('users/check', views.activate),
-    path('authSms', AuthSmsView.as_view()),
-    path('authSms/check', views.check_sms),
+    # path('main', views.main, name='main'),
+    # path('main2', views.main2, name='main2'), # 예시 나중에 삭제
+    # path('emotion', views.emotion, name='emotion'),
+    # path('face2', views.emotion_face, name='emotion_face'),
+    # path('emotion/result', views.emotion_result, name='emotion_result'),
+    # path('signIn', views.signIn, name='signIn'),
+    # path('signOut', views.signOut, name='signOut'),
+    # path('phone', views.phone, name='phone'),
+    # # path('singUp/', views.singUp, name='singUp'),
+    # path('dashBoard', views.dashBoard, name='dashBoard'),
+    # path('re_auth', views.re_auth, name='re_auth'),
+    # path('userlog', views.user_log, name='user_log'),
+    # path('emailsign', views.email_sign),
+    # path('users/check', views.activate),
+    # path('authSms', AuthSmsView.as_view()),
+    # path('authSms/check', views.check_sms),check_sms
 
 
     path('v2/main', views.v2_main, name='v2_main'),

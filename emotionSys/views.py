@@ -429,9 +429,10 @@ def v2_signIn(request):
         return render(request, 'index.html', {'data': user.name})
 
 def v2_signOut(request):
-    if request.session.get('user'):
-        del (request.session['user'])
-    return redirect('main')
+    if request.session.get('user_email'):
+        del (request.session['user_email'])
+
+    return redirect('/v2/main')
 
 def v2_signUp(request):
     if request.method == 'GET':
@@ -462,7 +463,7 @@ def v2_fail(request):
         # DBLog = dbs["admin"]
         # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'check.html', {'data': auth_category})
+        return render(request, 'check.html', {'data': auth_category, 'login': request.session.get('user_email')})
 
 
 def v2_emailCheck(request):

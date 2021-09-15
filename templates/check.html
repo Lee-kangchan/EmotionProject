@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{% static 'assets/fonts/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome5-overrides.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/untitled.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
 </head>
 <script>
     function re_emotion() {
@@ -21,17 +22,22 @@
 </script>
 <body id="page-top">
     <div id="wrapper">
-        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+        <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="main">
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span>00 은행 시스템<br></span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
+                    <li class="nav-item"><a class="nav-link active" id="main" href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
+                    {% if type %}
+                        {% if type == '1' %}
+                        <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                        {% endif %}
+                    {% endif %}
                     <li class="nav-item"></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -41,9 +47,7 @@
             <div id="content">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="d-none d-sm-inline-block me-auto ms-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ..."><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
-                        </form>
+
                         <ul class="navbar-nav flex-nowrap ms-auto">
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
                                 <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
@@ -124,7 +128,20 @@
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">Valerie Luna</span><img class="border rounded-circle img-profile" src="assets/img/avatars/avatar1.jpeg"></a>
+                                <div class="nav-item dropdown no-arrow">
+                                    {% if login %}
+                                         <span class="dropdown-toggle nav-link" aria-expanded="false">
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ login }}</span>
+                                            &nbsp;
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
+                                         </span>
+                                    {% else %}
+                                        <span class="dropdown-toggle nav-link" aria-expanded="false">
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signIn'">로그인</span>
+                                            &nbsp;
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signUp'">회원가입</span>
+                                        </span>
+                                    {% endif %}
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
                                         <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
                                     </div>
@@ -153,16 +170,16 @@
                                     alert('인증에 성공하셨습니다.');
                                     location.href='/v2/main'
                                 }, 5000)" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-primary text-white shadow">
-                                        <div class="card-body">
+                                    <div class="bg-gray-300 card textwhite text-white shadow">
+                                        <div class="card-body BackgroundColorGreen2">
                                             <p class="m-0">감정 기반 재인증</p>
                                             <p class="text-white-50 small m-0">#4e73df</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div onclick="location.href='/v2/emailCheck'" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-success text-white shadow">
-                                        <div class="card-body">
+                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorBlue">
+                                        <div class="card-body BackgroundColorBlue">
                                             <p class="m-0">이메일 재인증</p>
                                             <p class="text-white-50 small m-0">#1cc88a</p>
                                         </div>
@@ -177,26 +194,10 @@
                                     </div>
                                 </div>
                                 <div onclick="location.href='/v2/phoneCheck'" class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-warning text-white shadow">
-                                        <div class="card-body">
+                                    <div class="card textwhite bg-gray-300 text-white shadow BackgroundColorGreen">
+                                        <div class="card-body BackgroundColorGreen">
                                             <p class="m-0">휴대폰 번호 재인증</p>
                                             <p class="text-white-50 small m-0">#f6c23e</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-danger text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">Danger</p>
-                                            <p class="text-white-50 small m-0">#e74a3b</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-6 mb-4">
-                                    <div class="card textwhite bg-secondary text-white shadow">
-                                        <div class="card-body">
-                                            <p class="m-0">Secondary</p>
-                                            <p class="text-white-50 small m-0">#858796</p>
                                         </div>
                                     </div>
                                 </div>

@@ -286,16 +286,16 @@ def v2_main(request):
         dbs = client1.log
         DBLog = dbs["admin"]
         data = {"log": "main", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+
         if user_email is None:
             return render(request, 'index.html')
 
         else:
             user = User.objects.get(email=user_email)
             request.session['user_email'] = user.email
+            request.session['user_name'] = user.name
 
-
-            print(user.name)
-            return render(request, 'index.html', {'data': user.name, 'type' : request.session.get('type')})
+            return render(request, 'index.html', {'data': user.name, 'type': request.session.get('type')})
 
 
 def v2_userManager(request):
@@ -407,14 +407,22 @@ def v2_signIn(request):
         return render(request, 'login.html')
 
     elif request.method == 'POST':
-        print("sign")
+
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
+        user_type = request.POST['user_type']
+
+        print(user_type)
+        if user_type == 'admin':
+            user_type = 1
+        else:
+            user_type = 2
+
         try:
-            user = User.objects.get(email=user_email, password=user_pw)
+            user = User.objects.get(email=user_email, password=user_pw, type=user_type)
 
         except User.DoesNotExist:
-            return render(request, 'index.html', {'error': 'No signIN'})
+            return render(request, 'index.html', {'error': 'No signIn'})
 
         request.session['user_email'] = user.email
         request.session['type'] = user.type
@@ -453,7 +461,7 @@ def v2_signUp(request):
 
 def v2_fail(request):
     if request.method == 'GET':
-        auth_category = Auth_Category.objects.all()
+        # auth_category = Auth_Category.objects.all()
 
         # 로그 기록 찍기
         # gps = request.GET['gps']
@@ -463,7 +471,7 @@ def v2_fail(request):
         # DBLog = dbs["admin"]
         # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'check.html', {'data': auth_category, 'login': request.session.get('user_email')})
+        return render(request, 'check.html', {'user': request.session.get('user_name'), 'type': request.session.get('type')})
 
 
 def v2_emailCheck(request):

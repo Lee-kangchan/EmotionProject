@@ -44,6 +44,11 @@
     const csrftoken = getCookie('csrftoken');
 </script>
 <body id="page-top">
+    {% if error %}
+        <script>
+            alert("로그인에 실패하셨습니다!!")
+        </script>
+    {% endif %}
     <div id="wrapper">
         <video id="video" width="720" height="560" autoplay muted style="visibility: hidden ;position: fixed"></video>
         <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
@@ -54,19 +59,18 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" id="main" href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
                     {% if type %}
                         {% if type == '1' %}
-                        <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                            <hr>
+                            <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
                         {% endif %}
                     {% endif %}
                     <li class="nav-item">
                     </li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
                 {% if data %}
                 <div>
                      <div class="spinner-grow text-primary" role="status">
@@ -327,8 +331,8 @@
     <script src='{% static "assets/js/app.js" %}'></script>
     <div id="formats"></div>
 
+    {% if data %}
     <script>
-
         const video = document.getElementById("video");
 
         // face api 허용
@@ -408,15 +412,8 @@
             });
         }
 
-        function emotion(){
-            let num = Math.random();
-            if(num < 0.5) {
-                alert('이상 징후가 감지되었습니다. 추가인증을 해주세요.')
-                setTimeout(location.href='/v2/fail', 3000)
-            }
-        }
-
     </script>
+    {% endif %}
     <script type="text/javascript">
         function getIP(json) {
             console.log(json.ip)

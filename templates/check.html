@@ -13,14 +13,44 @@
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome5-overrides.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/untitled.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+
+    <script src='{% static "assets/js/jquery.min.js" %}'></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+    <script src='{% static "assets/js/app.js" %}'></script>
+
+    <script src='{% static "assets/js/face-api.min.js" %}'></script>
 </head>
 <script>
     function re_emotion() {
         alert("인증에 성공하셨습니다.")
         location.href='/v2/main'
     }
+    let detectTF = false;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
 </script>
 <body id="page-top">
+    <video id="video" width="720" height="560" autoplay muted style="visibility: hidden ;position: fixed"></video>
+    <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+
+    <canvas id="canvas" width="720" height="560" style="visibility: hidden ;position: fixed"></canvas>
     <div id="wrapper">
         <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
             <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="main">
@@ -29,18 +59,18 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" id="main" href="#"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
+
                     {% if type %}
                         {% if type == '1' %}
-                        <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                            <hr>
+                            <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
                         {% endif %}
                     {% endif %}
                     <li class="nav-item"></li>
                 </ul>
-                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -129,9 +159,9 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    {% if login %}
+                                    {% if user %}
                                          <span class="dropdown-toggle nav-link" aria-expanded="false">
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ login }}</span>
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ user }}</span>
                                             &nbsp;
                                             <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
                                          </span>
@@ -166,10 +196,7 @@
                     <div class="row">
                         <div class="col">
                             <div class="row">
-                                <div onclick="setTimeout(function () {
-                                    alert('인증에 성공하셨습니다.');
-                                    location.href='/v2/main'
-                                }, 5000)" class="col-lg-6 mb-4">
+                                <div onclick="emotion()" class="col-lg-6 mb-4">
                                     <div class="bg-gray-300 card textwhite text-white shadow">
                                         <div class="card-body BackgroundColorGreen2">
                                             <p class="m-0">감정 기반 재인증</p>
@@ -211,7 +238,97 @@
                     <div class="text-center my-auto copyright"><span>Copyright © Brand 2021</span></div>
                 </div>
             </footer>
-        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+        </div>
+        <script>
+            function emotion() {
+                const video = document.getElementById("video");
+
+            // face api 허용
+            Promise.all([
+              faceapi.nets.tinyFaceDetector.loadFromUri("{% static 'assets/models' %}"),
+              faceapi.nets.faceLandmark68Net.loadFromUri("{% static 'assets/models' %}"),
+              faceapi.nets.faceRecognitionNet.loadFromUri("{% static 'assets/models' %}"),
+              faceapi.nets.faceExpressionNet.loadFromUri("{% static 'assets/models' %}"),
+            ]).then(startVideo);
+
+            // 비디오 시작 함수
+            function startVideo() {
+              navigator.mediaDevices
+                .getUserMedia({ video: true })
+                .then(function (stream) {
+                  video.srcObject = stream;
+                })
+                .catch(function (err) {
+                  console.log(err);
+                });
+            }
+
+            // 비디오 사이즈
+            video.addEventListener("playing", () => {
+              const canvas = faceapi.createCanvasFromMedia(video);
+              document.body.append(canvas);
+              const displaySize = { width: video.width, height: video.height, style: "visibility:hidden"};
+              faceapi.matchDimensions(canvas, displaySize);
+
+            });
+
+            // 비동기 처리 얼굴 표정 값
+            setTimeout(async () => {
+
+                const detections = await faceapi
+                  .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                  .withFaceLandmarks()
+                  .withFaceExpressions();
+                var data = detections[0].expressions.fearful;
+                console.log(parseFloat(data).toFixed(8));
+                var fd=new FormData();
+
+               fd.append("neutral", parseFloat(detections[0].expressions.neutral).toFixed(8));
+               fd.append("happy", parseFloat(detections[0].expressions.happy).toFixed(8));
+               fd.append("angry", parseFloat(detections[0].expressions.angry).toFixed(8));
+               fd.append("sad", parseFloat(detections[0].expressions.sad).toFixed(8));
+               fd.append("fearful", parseFloat(detections[0].expressions.fearful).toFixed(8));
+
+              $.ajax({
+                    headers: {'X-CSRFToken': csrftoken},
+                    type : 'POST',
+                    url : '/v2/face',
+                    data : fd,
+                    dataType: 'json',
+                    processData: false,    // 반드시 작성
+                    contentType: false,    // 반드시 작성
+                    success : function(result){
+                        fear = parseFloat(detections[0].expressions.fearful).toFixed(8)
+                        if(fear > 0.15) {``
+                            alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
+                            window.location.href = '/v2/fail';
+                        }else{
+
+                            alert("감정 기반 재인증이 성공하였습니다.")
+                            window.location.href = '/v2/main';
+                        }r
+                    },
+                    error : function(xtr,status,error){
+                       alert("측정 오류. 기존 페이지를 유지합니다.")
+                    }
+                });
+
+              }, 3000);
+
+            //미디어 허용
+            if (navigator.mediaDevices.getUserMedia) {
+              navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                  video.srcObject = stream;
+                })
+                .catch(function (err0r) {
+                  console.log("Something went wrong!");
+                });
+            }
+            }
+
+        </script>
+        <a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
     <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'assets/js/chart.min.js' %}"></script>

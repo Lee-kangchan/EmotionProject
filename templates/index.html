@@ -185,6 +185,8 @@
                                             &nbsp;
                                             <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
                                          </span>
+                                        {% if type %}
+                                            {% if type == '2' %}
                                          <script>
                                             detectTF = true;
                                             setInterval(function () {
@@ -192,6 +194,8 @@
                                                 setTimeout(stopRecording, 5000);
                                             }, 10000);
                                          </script>
+                                        {% endif %}
+                                        {% endif %}
                                     {% else %}
                                         <span class="dropdown-toggle nav-link" aria-expanded="false">
                                             <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signIn'">로그인</span>

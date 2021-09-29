@@ -133,8 +133,11 @@ def signIn(request):
         except User.DoesNotExist:
             return render(request, 'index.html', {'error': 'not connect'})
 
-        request.session['user'] = user.email
-        return render(request, 'index.html', {'field': user_email})
+        request.session['userName'] = user.name
+        request.session['type'] = user.type
+        request.session['user_email'] = user.email
+
+        return render(request, 'index.html', {'field': user_email, 'username': request.session.get('userName')})
 
 
 def user_log(request):
@@ -291,11 +294,8 @@ def v2_main(request):
             return render(request, 'index.html')
 
         else:
-            user = User.objects.get(email=user_email)
-            request.session['user_email'] = user.email
-            request.session['user_name'] = user.name
 
-            return render(request, 'index.html', {'data': user.name, 'type': request.session.get('type')})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_userManager(request):
@@ -320,7 +320,7 @@ def v2_userManager(request):
     DBEmotion.insert_one(data)
     result = User.objects.all()
     print(result[0].email)
-    return render(request, 'userManager.html', {'data': result})
+    return render(request, 'userManager.html', {'data': result, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 
@@ -345,7 +345,7 @@ def v2_userlog(request):
 
     result = DBEmotion.find()
     DBEmotion.insert_one(data);
-    return render(request, 'userlog.html', {'data': result})
+    return render(request, 'userlog.html', {'data': result, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_facelog(request):
@@ -371,7 +371,7 @@ def v2_facelog(request):
     dbslog = dbs[id];
     data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     dbslog.insert_one(data)
-    return render(request, 'facelog.html', {'data': result, 'data2' : result})
+    return render(request, 'facelog.html', {'data': result, 'username': request.session.get('userName'), 'data2' : result, 'type': request.session.get('type')})
 def v2_voicelog(request):
     request.method == 'GET'
     # Mongo 클라이언트 생성
@@ -399,7 +399,7 @@ def v2_voicelog(request):
     DBLog = dbs[id]
     data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
     DBLog.insert_one(data)
-    return render(request, 'voicelog.html', {'data': result, 'data_cnt': result_cnt})
+    return render(request, 'voicelog.html', {'data': result, 'username': request.session.get('userName'), 'data_cnt': result_cnt, 'type': request.session.get('type')})
 
 
 def v2_signIn(request):
@@ -426,6 +426,7 @@ def v2_signIn(request):
 
         request.session['user_email'] = user.email
         request.session['type'] = user.type
+        request.session['userName'] = user.name
         # 로그 기록 찍기
         # gps = request.GET['gps']
         # device = request.GET['device']
@@ -434,12 +435,10 @@ def v2_signIn(request):
         # DBLog = dbs["admin"]
         # data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'index.html', {'data': user.name})
+        return render(request, 'index.html', {'data': user.name, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 def v2_signOut(request):
-    if request.session.get('user_email'):
-        del (request.session['user_email'])
-
+    request.session.clear()
     return redirect('/v2/main')
 
 def v2_signUp(request):
@@ -471,7 +470,7 @@ def v2_fail(request):
         # DBLog = dbs["admin"]
         # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'check.html', {'user': request.session.get('user_name'), 'type': request.session.get('type')})
+        return render(request, 'check.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_emailCheck(request):
@@ -640,7 +639,7 @@ def v2_dashBoard(request):
             # data = {"log": "userlog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
             result = DBEmotion.find()
             return render(request, 'profile.html', {"auth_category": auth_category,
-                                                    "data": result})
+                                                    "data": result, 'type': request.session.get('type')})
 
         else:
             return render(request, 'profile.html')

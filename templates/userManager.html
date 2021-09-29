@@ -37,14 +37,15 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" id="main"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="facelog"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="voice"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="user"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
+
                     {% if type %}
                         {% if type == '1' %}
-                        <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
-                            {% endif %}
+                            <hr>
+                            <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                        {% endif %}
                     {% endif %}
                     <li class="nav-item"></li>
                 </ul>
@@ -139,9 +140,9 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    {% if data %}
+                                    {% if username %}
                                          <span class="dropdown-toggle nav-link" aria-expanded="false">
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ user }}</span>
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ username }}</span>
                                             &nbsp;
                                             <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
                                          </span>

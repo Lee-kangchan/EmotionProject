@@ -53,16 +53,18 @@
     <canvas id="canvas" width="720" height="560" style="visibility: hidden ;position: fixed"></canvas>
     <div id="wrapper">
         <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="main">
+            <div class="container-fluid d-flex flex-column p-0">
+                <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="/v2/fail">
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span>00 은행 시스템<br></span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <!--
                     <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
                     <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
-
+                    -->
                     {% if type %}
                         {% if type == '1' %}
                             <hr>
@@ -70,6 +72,7 @@
                         {% endif %}
                     {% endif %}
                     <li class="nav-item"></li>
+
                 </ul>
             </div>
         </nav>
@@ -159,9 +162,9 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow">
-                                    {% if user %}
+                                    {% if username %}
                                          <span class="dropdown-toggle nav-link" aria-expanded="false">
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ user }}</span>
+                                            <span class="d-none d-lg-inline me-2 text-gray-600 small">{{ username }}</span>
                                             &nbsp;
                                             <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
                                          </span>
@@ -215,7 +218,7 @@
                                 <div onclick="location.href='/v2/locateCheck'" class="col-lg-6 mb-4">
                                     <div class="card textwhite bg-info text-white shadow">
                                         <div class="card-body">
-                                            <p class="m-0">위치 기반 재인증</p>
+                                            <p class="m-0">위치 기반 재인증(현재 미운용)</p>
                                             <p class="text-white-50 small m-0">#36b9cc</p>
                                         </div>
                                     </div>
@@ -280,38 +283,18 @@
                   .withFaceLandmarks()
                   .withFaceExpressions();
                 var data = detections[0].expressions.fearful;
+
                 console.log(parseFloat(data).toFixed(8));
-                var fd=new FormData();
 
-               fd.append("neutral", parseFloat(detections[0].expressions.neutral).toFixed(8));
-               fd.append("happy", parseFloat(detections[0].expressions.happy).toFixed(8));
-               fd.append("angry", parseFloat(detections[0].expressions.angry).toFixed(8));
-               fd.append("sad", parseFloat(detections[0].expressions.sad).toFixed(8));
-               fd.append("fearful", parseFloat(detections[0].expressions.fearful).toFixed(8));
+                fear = parseFloat(detections[0].expressions.fearful).toFixed(8)
+                if(fear > 0.15) {
+                    alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
+                    window.location.href = '/v2/fail';
+                }else{
 
-              $.ajax({
-                    headers: {'X-CSRFToken': csrftoken},
-                    type : 'POST',
-                    url : '/v2/face',
-                    data : fd,
-                    dataType: 'json',
-                    processData: false,    // 반드시 작성
-                    contentType: false,    // 반드시 작성
-                    success : function(result){
-                        fear = parseFloat(detections[0].expressions.fearful).toFixed(8)
-                        if(fear > 0.15) {``
-                            alert("이상 징후가 감지되었습니다. 추가인증을 해주세요.")
-                            window.location.href = '/v2/fail';
-                        }else{
-
-                            alert("감정 기반 재인증이 성공하였습니다.")
-                            window.location.href = '/v2/main';
-                        }r
-                    },
-                    error : function(xtr,status,error){
-                       alert("측정 오류. 기존 페이지를 유지합니다.")
-                    }
-                });
+                    alert("감정 기반 재인증이 성공하였습니다.")
+                    window.location.href = '/v2/main';
+                }
 
               }, 3000);
 

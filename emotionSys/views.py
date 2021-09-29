@@ -493,7 +493,7 @@ def v2_emailCheck(request):
 
             mail_title = "[데모 시스템] 이메일 2차 인증"
             message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
-            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email = EmailMessage(mail_title, message_data, to=[user_email])
             email.send()
 
             return render(request, 'emailCheck.html', {'data': user_email})
@@ -507,13 +507,12 @@ def v2_emailCheck(request):
 
             mail_title = "[데모 시스템] 이메일 2차 인증"
             message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
-            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email = EmailMessage(mail_title, message_data, to=[user_email])
             email.send()
 
             return render(request, 'emailCheck.html', {'data': user_email})
 
     elif request.method == 'POST':
-        print('post')
         user_email = request.session.get('user_email')
         input_data = request.POST['number']
 
@@ -522,7 +521,7 @@ def v2_emailCheck(request):
 
         if int(input_data) == int(email.auth_number):
             print('collect')
-            return render(request, 'index.html', {'data': user.name})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
         else:
             print('fail')
@@ -594,7 +593,7 @@ class v2_phoneCheck(View):
 
         if int(input_data) == int(auth.auth_number):
             print('collect')
-            return render(request, 'index.html', {'data': user.name})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
         else:
             print('fail')

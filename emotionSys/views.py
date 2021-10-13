@@ -360,7 +360,7 @@ def v2_facelog(request):
     print(id)
     DBFace = db[id]
 
-    result = DBFace.find()
+    result = DBFace.find().sort("Date", -1)
 
 
     #로그 기록 찍기
@@ -381,7 +381,7 @@ def v2_voicelog(request):
 
     DBVoice = db1[id]
 
-    result = DBVoice.find()
+    result = DBVoice.find().sort("date", -1)
 
     client2 = mongo.MongoClient()
     db2 = client2.voice_count

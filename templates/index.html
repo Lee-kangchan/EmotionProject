@@ -430,7 +430,9 @@
     </script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {% if username %}
     <script src='{% static "assets/js/check.js" %}'></script>
+    {% endif %}
     <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'assets/js/chart.min.js' %}"></script>
     <script src="{% static 'assets/js/bs-init.js' %}"></script>

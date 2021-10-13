@@ -410,19 +410,14 @@ def v2_signIn(request):
 
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
-        user_type = request.POST['user_type']
 
-        print(user_type)
-        if user_type == 'admin':
-            user_type = 1
-        else:
-            user_type = 2
 
         try:
-            user = User.objects.get(email=user_email, password=user_pw, type=user_type)
+            user = User.objects.get(email=user_email, password=user_pw)
 
         except User.DoesNotExist:
             return render(request, 'index.html', {'error': 'No signIn'})
+
 
         request.session['user_email'] = user.email
         request.session['type'] = user.type

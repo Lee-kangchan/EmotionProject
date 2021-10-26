@@ -416,8 +416,8 @@ def v2_faillog(request):
     result = DBfail.find().sort("date", -1)
 
     cnt = {
-        "face": DBfail.find({'detection':'face'}).count,
-        "voice": DBfail.find({'detection':'voice'}).count
+        "face": DBfail.find({'detection': 'face'}).count,
+        "voice": DBfail.find({'detection': 'voice'}).count
     }
     #로그 기록 찍기
     gps = request.GET.get('gps')
@@ -427,7 +427,7 @@ def v2_faillog(request):
     DBLog = dbs[id]
     data = {"log": "failLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     DBLog.insert_one(data)
-    return render(request, 'faillog.html', {'data': result, 'username': request.session.get('userName'), 'cnt':cnt,'type': request.session.get('type')})
+    return render(request, 'faillog.html', {'data': result, 'username': request.session.get('userName'), 'cnt': cnt,'type': request.session.get('type')})
 
 
 def v2_signIn(request):

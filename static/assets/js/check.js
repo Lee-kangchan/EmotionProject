@@ -195,7 +195,24 @@ $("#userlog").click(function (){
           gps = "X";
       }
 })
+$("#faillog").click(function (){
+    device = mobilePcCheck();
+     if (navigator.geolocation) { // GPS를 지원하면
+         navigator.geolocation.getCurrentPosition(function(position) {
+            gps = position.coords.latitude + ' ' + position.coords.longitude;
 
+            location.href = "/v2/failLog?gps="+gps+"&device="+device;
+        }, function(error) {
+          console.error(error);
+        }, {
+          enableHighAccuracy: false,
+          maximumAge: 0,
+          timeout: Infinity
+        });
+      } else {
+          gps = "X";
+      }
+})
 $("#dashBoard").click(function(){
     device = mobilePcCheck();
      if (navigator.geolocation) { // GPS를 지원하면

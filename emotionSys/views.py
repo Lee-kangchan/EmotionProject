@@ -6,6 +6,7 @@ import json
 from random import randint
 
 import datetime
+from datetime import date
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -50,7 +51,7 @@ def dashBoard(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs["admin"]
-    data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "dashboard", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     try:
         user = User.objects.get(email=user)
 
@@ -162,7 +163,7 @@ def user_log(request):
         # DBVoice = db1[id]
         DBEmotion = dbs[id]
 
-        result = DBEmotion.find()
+        result = DBEmotion.find().sort("date", -1)
         return render(request, 'user_log.html', {'data': result})
 
 
@@ -288,7 +289,7 @@ def v2_main(request):
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs["admin"]
-        data = {"log": "main", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        data = {"log": "main", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
 
         if user_email is None:
             return render(request, 'index.html')
@@ -313,7 +314,7 @@ def v2_userManager(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "userManager", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userManager", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
@@ -339,11 +340,11 @@ def v2_userlog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "userLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
-    result = DBEmotion.find()
+    result = DBEmotion.find().sort("date", -1)
     DBEmotion.insert_one(data);
     return render(request, 'userlog.html', {'data': result, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
@@ -369,9 +370,10 @@ def v2_facelog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     dbslog = dbs[id];
-    data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "faceLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     dbslog.insert_one(data)
     return render(request, 'facelog.html', {'data': result, 'username': request.session.get('userName'), 'data2' : result, 'type': request.session.get('type')})
+
 def v2_voicelog(request):
     request.method == 'GET'
     # Mongo 클라이언트 생성
@@ -397,9 +399,35 @@ def v2_voicelog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "voiceLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     DBLog.insert_one(data)
     return render(request, 'voicelog.html', {'data': result, 'username': request.session.get('userName'), 'data_cnt': result_cnt, 'type': request.session.get('type')})
+
+
+def v2_faillog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    db1 = client1.fail
+    id = request.session.get("user_email")
+
+    DBfail = db1[id]
+
+    result = DBfail.find().sort("date", -1)
+
+    cnt = {
+        "face": DBfail.find({'detection':'face'}).count,
+        "voice": DBfail.find({'detection':'voice'}).count
+    }
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "failLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
+    DBLog.insert_one(data)
+    return render(request, 'faillog.html', {'data': result, 'username': request.session.get('userName'), 'cnt':cnt,'type': request.session.get('type')})
 
 
 def v2_signIn(request):

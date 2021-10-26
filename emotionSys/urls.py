@@ -27,6 +27,7 @@ urlpatterns = [
     path('v2/userManager', views.v2_userManager, name='v2_userManager'),
     path('v2/faceLog', views.v2_facelog, name='v2_facelog'),
     path('v2/voiceLog', views.v2_voicelog, name='v2_voicelog'),
+    path('v2/failLog', views.v2_faillog, name='v2_faillog'),
     path('v2/signOut', views.v2_signOut, name='v2_signOut'),
     path('v2/signUp', views.v2_signUp, name='v2_signUp'),
     path('v2/fail', views.v2_fail, name='v2_fail'),

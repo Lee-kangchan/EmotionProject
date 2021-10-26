@@ -401,20 +401,23 @@
 
 
          var ctx = document.getElementById('myChart');
-         var chartData = { labels: ["0", "1", "2", "3", "4", "5", "6","7"],
+         var chartData = {
+             labels: ["0", "1", "2", "3", "4", "5", "6","7"],
              datasets: [{ data: facearr,
+                 label:'face',
                  backgroundColor: 'transparent',
                  borderColor: colors[0],
                  borderWidth: 3,
                  pointBackgroundColor: colors[0] },
                  { data: voicearr,
+                     label:'voice',
                      backgroundColor: 'transparent',
                      borderColor: colors[1],
                      borderWidth: 3,
                      pointBackgroundColor: colors[0]
                  }
              ]
-         }; var myChart = new Chart(ctx, { type: 'line',  data: chartData,  options: { legend: { display: false } } });
+         }; var myChart = new Chart(ctx, { type: 'line',  data: chartData,  options: donutOptions });
 
     </script>
 </body>

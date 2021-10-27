@@ -23,9 +23,13 @@
     <script src='{% static "assets/js/face-api.min.js" %}'></script>
 </head>
 <script>
-    function re_emotion() {
-        alert("인증에 성공하셨습니다.")
-        location.href='/v2/main'
+    function emotion_reCheck() {
+        if (document.getElementById('loading').style.display == 'none') {
+            document.getElementById('loading').style.display = 'block';
+        } else {
+            document.getElementById('loading').style.display = 'none';
+        }
+
     }
     let detectTF = false;
 
@@ -72,8 +76,26 @@
                         {% endif %}
                     {% endif %}
                     <li class="nav-item"></li>
-
                 </ul>
+                {% if type %}
+                    {% if type == '2' %}
+                        <div id="loading" style="display:none">
+                             <div class="spinner-grow text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-secondary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <div class="spinner-grow text-success" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+
+                            <div class = "fw-bold m-0 FontColorBlack">측정 중 입니다..</div>
+                        </div>
+                        <div></div>
+
+                    {% endif %}
+                {% endif %}
             </div>
         </nav>
         <div class="d-flex flex-column" id="content-wrapper">
@@ -202,7 +224,7 @@
                                 <div onclick="emotion()" class="col-lg-6 mb-4">
                                     <div class="bg-gray-300 card textwhite text-white shadow">
                                         <div class="card-body BackgroundColorGreen2">
-                                            <p class="m-0">감정 기반 재인증</p>
+                                            <p onclick="emotion_reCheck()" class="m-0">감정 기반 재인증</p>
                                         </div>
                                     </div>
                                 </div>

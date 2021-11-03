@@ -79,21 +79,21 @@
                 </ul>
                 {% if type %}
                     {% if type == '2' %}
-                        <div id="loading" style="display:none">
-                             <div class="spinner-grow text-primary" role="status">
+{#                        <div class = "fw-bold m-0 FontColorBlack">측정 중 입니다..</div>#}
+                        <div>
+                             <div id="voice_loading" style="display:none" class="spinner-grow text-primary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <div class="spinner-grow text-secondary" role="status">
+                            <div></div>
+                            <div id="face_loading" style="display:none" class="spinner-grow text-secondary" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <div class="spinner-grow text-success" role="status">
+                            <div></div>
+                            <div id="brainwave_loading" style="display:none" class="spinner-grow text-success" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-
-                            <div class = "fw-bold m-0 FontColorBlack">측정 중 입니다..</div>
                         </div>
                         <div></div>
-
                     {% endif %}
                 {% endif %}
             </div>
@@ -283,7 +283,7 @@
                   console.log(err);
                 });
             }
-
+            document.getElementById("voice_loading").style.display = 'block';
             // 비디오 사이즈
             video.addEventListener("playing", () => {
               const canvas = faceapi.createCanvasFromMedia(video);
@@ -294,13 +294,18 @@
             });
 
             // 비동기 처리 얼굴 표정 값
-            setTimeout(async () => {
 
+            setTimeout(async () => {
+                document.getElementById("face_loading").style.display = 'block';
+
+                document.getElementById("voice_loading").style.display = 'none';
                 const detections = await faceapi
                   .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
                   .withFaceLandmarks()
                   .withFaceExpressions();
+
                 var data = detections[0].expressions.fearful;
+
 
                 console.log(parseFloat(data).toFixed(8));
 
@@ -315,7 +320,7 @@
                 }
 
               }, 3000);
-
+            document.getElementById("face_loading").style.display = 'none';
             //미디어 허용
             if (navigator.mediaDevices.getUserMedia) {
               navigator.mediaDevices.getUserMedia({ video: true })

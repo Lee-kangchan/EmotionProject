@@ -12,7 +12,7 @@ var audioContext //audio context to help us record
 function startRecording() {
 	console.log("recordButton clicked");
 
-
+	document.getElementById("voice_loading").style.display = "block";
     var constraints = { audio: true, video:false }
 
 
@@ -91,4 +91,6 @@ function createDownloadLink(blob) {
                alert("측정 오류. 기존 페이지를 유지합니다.")
             }
         });
+
+	document.getElementById("voice_loading").style.display = 'none';
 }

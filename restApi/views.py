@@ -129,7 +129,6 @@ def face(request):
     return Response({'data': data_json, 'face': result}, status=status.HTTP_200_OK)
 
 
-
 @api_view(['UPDATE'])
 def mypage_emotion(request):
     if request.method == "UPDATE":

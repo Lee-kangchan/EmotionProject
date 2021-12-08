@@ -51,6 +51,7 @@ def voice(request):
             'negative': voiceresult['fear'],
             'date': str(datetime.datetime.now())
         }
+
         # Mongo 클라이언트 생성
         client1 = mongo.MongoClient()
         db = client1.voice
@@ -66,6 +67,17 @@ def voice(request):
         DBVoice_Count.update({'_id': id}, {
             '$inc': {'negative_cnt': 1},
         }, upsert=True)
+
+        if voiceresult['fear'] >= 0.5:
+            db2 = client1.fail
+            dbfail = db2[id]
+            data = {
+                "_id": uuid_name,
+                "detection": "voice",
+                "result": voiceresult['fear'],
+                "date": str(datetime.datetime.now())
+            }
+            dbfail.insert_one(data)
 
         print(data_json)
         return Response({'data': data_json}, status=status.HTTP_200_OK)
@@ -100,6 +112,18 @@ def face(request):
     db = client1.face
     DBFace = db[id]
     DBFace.insert_one(data_json)
+
+    if float(request.POST['fearful']) >= 0.2:
+        print("fearful Test ~~~~~~~~~~~~~~~~~~")
+        db2 = client1.fail
+        dbfail = db2[id]
+        data = {
+            "_id": uuid_name,
+            "detection": "face",
+            "result": request.POST['fearful'],
+            "date": str(datetime.datetime.now())
+        }
+        dbfail.insert_one(data)
 
     print(data_json)
     return Response({'data': data_json, 'face': result}, status=status.HTTP_200_OK)

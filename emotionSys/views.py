@@ -6,6 +6,7 @@ import json
 from random import randint
 
 import datetime
+from datetime import date
 import requests
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
@@ -50,7 +51,7 @@ def dashBoard(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs["admin"]
-    data = {"log": "dashboard", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "dashboard", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     try:
         user = User.objects.get(email=user)
 
@@ -133,8 +134,11 @@ def signIn(request):
         except User.DoesNotExist:
             return render(request, 'index.html', {'error': 'not connect'})
 
-        request.session['user'] = user.email
-        return render(request, 'index.html', {'field': user_email})
+        request.session['userName'] = user.name
+        request.session['type'] = user.type
+        request.session['user_email'] = user.email
+
+        return render(request, 'index.html', {'field': user_email, 'username': request.session.get('userName')})
 
 
 def user_log(request):
@@ -159,7 +163,7 @@ def user_log(request):
         # DBVoice = db1[id]
         DBEmotion = dbs[id]
 
-        result = DBEmotion.find()
+        result = DBEmotion.find().sort("date", -1)
         return render(request, 'user_log.html', {'data': result})
 
 
@@ -285,17 +289,14 @@ def v2_main(request):
         client1 = mongo.MongoClient()
         dbs = client1.log
         DBLog = dbs["admin"]
-        data = {"log": "main", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+        data = {"log": "main", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
+
         if user_email is None:
             return render(request, 'index.html')
 
         else:
-            user = User.objects.get(email=user_email)
-            request.session['user_email'] = user.email
-            request.session['user_name'] = user.name
 
-            print(user.name)
-            return render(request, 'index.html', {'user': user.name,'data': user.name, 'type' : request.session.get('type')})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_userManager(request):
@@ -313,15 +314,14 @@ def v2_userManager(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-
-    data = {"log": "userManager", 'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userManager", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
     DBEmotion.insert_one(data)
     result = User.objects.all()
     print(result[0].email)
-    return render(request, 'userManager.html', {'data': result})
+    return render(request, 'userManager.html', {'data': result, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 
@@ -340,13 +340,13 @@ def v2_userlog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "userLog", 'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "userLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
 
     DBEmotion = dbs[id]
 
-    result = DBEmotion.find()
+    result = DBEmotion.find().sort("date", -1)
     DBEmotion.insert_one(data);
-    return render(request, 'userlog.html', {'data': result})
+    return render(request, 'userlog.html', {'data': result, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_facelog(request):
@@ -361,7 +361,7 @@ def v2_facelog(request):
     print(id)
     DBFace = db[id]
 
-    result = DBFace.find()
+    result = DBFace.find().sort("Date", -1)
 
 
     #로그 기록 찍기
@@ -370,9 +370,10 @@ def v2_facelog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     dbslog = dbs[id];
-    data = {"log": "faceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "faceLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     dbslog.insert_one(data)
-    return render(request, 'facelog.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': result, 'data2' : result})
+    return render(request, 'facelog.html', {'data': result, 'username': request.session.get('userName'), 'data2' : result, 'type': request.session.get('type')})
+
 def v2_voicelog(request):
     request.method == 'GET'
     # Mongo 클라이언트 생성
@@ -382,7 +383,7 @@ def v2_voicelog(request):
 
     DBVoice = db1[id]
 
-    result = DBVoice.find()
+    result = DBVoice.find().sort("date", -1)
 
     client2 = mongo.MongoClient()
     db2 = client2.voice_count
@@ -398,9 +399,35 @@ def v2_voicelog(request):
     client1 = mongo.MongoClient()
     dbs = client1.log
     DBLog = dbs[id]
-    data = {"log": "voiceLog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
+    data = {"log": "voiceLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
     DBLog.insert_one(data)
-    return render(request, 'voicelog.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': result, 'data_cnt': result_cnt})
+    return render(request, 'voicelog.html', {'data': result, 'username': request.session.get('userName'), 'data_cnt': result_cnt, 'type': request.session.get('type')})
+
+
+def v2_faillog(request):
+    request.method == 'GET'
+    # Mongo 클라이언트 생성
+    client1 = mongo.MongoClient()
+    db1 = client1.fail
+    id = request.session.get("user_email")
+
+    DBfail = db1[id]
+
+    result = DBfail.find().sort("date", -1)
+
+    cnt = {
+        "face": DBfail.find({'detection': 'face'}).count,
+        "voice": DBfail.find({'detection': 'voice'}).count
+    }
+    #로그 기록 찍기
+    gps = request.GET.get('gps')
+    device = request.GET.get('device')
+    client1 = mongo.MongoClient()
+    dbs = client1.log
+    DBLog = dbs[id]
+    data = {"log": "failLog", "date": str(datetime.datetime.now()), "GPS": gps, "device": device}
+    DBLog.insert_one(data)
+    return render(request, 'faillog.html', {'data': result, 'username': request.session.get('userName'), 'cnt': cnt,'type': request.session.get('type')})
 
 
 def v2_signIn(request):
@@ -408,17 +435,21 @@ def v2_signIn(request):
         return render(request, 'login.html')
 
     elif request.method == 'POST':
-        print("sign")
+
         user_email = request.POST['user_email']
         user_pw = request.POST['user_pw']
+
+
         try:
             user = User.objects.get(email=user_email, password=user_pw)
 
         except User.DoesNotExist:
-            return render(request, 'index.html', {'error': 'No signIN'})
+            return render(request, 'index.html', {'error': 'No signIn'})
+
 
         request.session['user_email'] = user.email
         request.session['type'] = user.type
+        request.session['userName'] = user.name
         # 로그 기록 찍기
         # gps = request.GET['gps']
         # device = request.GET['device']
@@ -427,12 +458,11 @@ def v2_signIn(request):
         # DBLog = dbs["admin"]
         # data = {"log": "signin", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'index.html', {'data': user.name})
+        return render(request, 'index.html', {'data': user.name, 'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 def v2_signOut(request):
-    if request.session.get('user_email'):
-        del (request.session['user_email'])
-    return redirect('v2_main')
+    request.session.clear()
+    return redirect('/v2/main')
 
 def v2_signUp(request):
     if request.method == 'GET':
@@ -453,7 +483,7 @@ def v2_signUp(request):
 
 def v2_fail(request):
     if request.method == 'GET':
-        auth_category = Auth_Category.objects.all()
+        # auth_category = Auth_Category.objects.all()
 
         # 로그 기록 찍기
         # gps = request.GET['gps']
@@ -463,7 +493,7 @@ def v2_fail(request):
         # DBLog = dbs["admin"]
         # data = {"log": "fail", "date": datetime.datetime.now(), "GPS": gps, "device": device}
 
-        return render(request, 'check.html', {'data': auth_category})
+        return render(request, 'check.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
 
 def v2_emailCheck(request):
@@ -486,10 +516,10 @@ def v2_emailCheck(request):
 
             mail_title = "[데모 시스템] 이메일 2차 인증"
             message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
-            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email = EmailMessage(mail_title, message_data, to=[user_email])
             email.send()
 
-            return render(request, 'emailCheck.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': user_email})
+            return render(request, 'emailCheck.html', {'data': user_email})
 
         except AuthEmail.DoesNotExist:
             created_auth_number = randint(1000, 10000)
@@ -500,13 +530,12 @@ def v2_emailCheck(request):
 
             mail_title = "[데모 시스템] 이메일 2차 인증"
             message_data = "OTP 인증을 위해 다음 번호를 입력해주세요 : " + str(created_auth_number)
-            email = EmailMessage(mail_title, message_data, to=['20161658@g.dongseo.ac.kr'])
+            email = EmailMessage(mail_title, message_data, to=[user_email])
             email.send()
 
             return render(request, 'emailCheck.html', {'data': user_email})
 
     elif request.method == 'POST':
-        print('post')
         user_email = request.session.get('user_email')
         input_data = request.POST['number']
 
@@ -515,7 +544,7 @@ def v2_emailCheck(request):
 
         if int(input_data) == int(email.auth_number):
             print('collect')
-            return render(request, 'index.html', {'type' : request.session.get('type'), 'user' :  request.session.get("user_name"), 'data': user.name})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
         else:
             print('fail')
@@ -587,7 +616,7 @@ class v2_phoneCheck(View):
 
         if int(input_data) == int(auth.auth_number):
             print('collect')
-            return render(request, 'index.html', {'data': user.name})
+            return render(request, 'index.html', {'username': request.session.get('userName'), 'type': request.session.get('type')})
 
         else:
             print('fail')
@@ -632,7 +661,7 @@ def v2_dashBoard(request):
             # data = {"log": "userlog", "date": datetime.datetime.now(), "GPS": gps, "device": device}
             result = DBEmotion.find()
             return render(request, 'profile.html', {"auth_category": auth_category,
-                                                    "data": result})
+                                                    "data": result, 'type': request.session.get('type')})
 
         else:
             return render(request, 'profile.html')

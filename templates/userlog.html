@@ -31,18 +31,22 @@
         <video id="video" width="720" height="560" autoplay muted style="visibility: hidden ;position: fixed"></video>
         <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
         <nav class="navbar gradient navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
-            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="main">
                     <div class="sidebar-brand-icon rotate-n-15"></div>
                     <div class="sidebar-brand-text mx-3"><span>00 은행 시스템<br></span></div>
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link active" id="main"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="facelog"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="voice"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" id="user"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
-                    {% if data %}
-                     <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="facelog" href="#"><i class="far fa-surprise"></i><span>얼굴 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="voicelog" href="#"><i class="fas fa-microphone-alt"></i><span>목소리 측정 값</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" id="userlog" href="#"><i class="fas fa-male"></i><span>사용자 로그</span></a></li>
+
+                    {% if type %}
+                        {% if type == '1' %}
+                            <hr>
+                         <li class="nav-item"><a class="nav-link active" id="faillog" href="#"><i class="fas fa-male"></i><span>이상 감지</span></a></li>
+                            <li class="nav-item"><a class="nav-link active" id="userManager" href="#"><i class="fas fa-male"></i><span>회원관리</span></a></li>
+                        {% endif %}
                     {% endif %}
                     <li class="nav-item"></li>
                 </ul>
@@ -135,25 +139,21 @@
                                 <div class="shadow dropdown-list dropdown-menu dropdown-menu-end" aria-labelledby="alertsDropdown"></div>
                             </li>
                             <div class="d-none d-sm-block topbar-divider"></div>
-                            <li class="nav-item dropdown no-arrow">
-                                <div class="nav-item dropdown no-arrow">
-                                    {% if data %}
-                                         <span class="dropdown-toggle nav-link" aria-expanded="false">
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/dashBoard'">{{ data }}</span>
+                            <li class="nav-item dropdown no-arrow mx-1">
+                                    {% if username %}
+                                        <span class="dropdown-toggle nav-link" aria-expanded="false">
+                                            <a class=" d-lg-inline me-2 text-gray-600 small">{{ username }}</a>
                                             &nbsp;
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
-                                         </span>
+                                            <span class=" d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
+                                        </span>
                                     {% else %}
                                         <span class="dropdown-toggle nav-link" aria-expanded="false">
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signIn'">로그인</span>
+                                            <span class=" d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signIn'">로그인</span>
                                             &nbsp;
-                                            <span class="d-none d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signUp'">회원가입</span>
+                                            <span class=" d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signUp'">회원가입</span>
                                         </span>
                                     {% endif %}
-                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="#"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Profile</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Activity log</a>
-                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Logout</a>
-                                    </div>
-                                </div>
+
                             </li>
                         </ul>
                     </div>

@@ -1,6 +1,5 @@
 ## 개발환경
 
----
 
 - django
 - mysql
@@ -9,7 +8,6 @@
 
 ## 설치
 
----
 
 모듈 설치
 
@@ -33,7 +31,6 @@ migration 설정
 
 ## 실행
 
----
 
 <aside>
 💡 `python manage.py runsslserver 192.168.64.118:8000`
@@ -41,8 +38,6 @@ migration 설정
 </aside>
 
 ## 주요 파일 설명
-
----
 
 ### emotionProject
 

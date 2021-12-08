@@ -74,7 +74,6 @@
                     <li class="nav-item"></li>
                 </ul>
                 {% if type %}
-                    {% if type == '2' %}
 {#                        <div class = "fw-bold m-0 FontColorBlack">측정 중 입니다..</div>#}
                         <div>
                              <div id="voice_loading" style="display:none" class="spinner-grow text-primary" role="status">
@@ -90,7 +89,6 @@
                             </div>
                         </div>
                         <div></div>
-                {% endif %}
                 {% endif %}
             </div>
         </nav>
@@ -172,9 +170,11 @@
                             <div class="d-none d-sm-block topbar-divider"></div>
                             <li class="nav-item dropdown no-arrow mx-1">
                                     {% if username %}
+                                        <span class="dropdown-toggle nav-link" aria-expanded="false">
                                             <a class=" d-lg-inline me-2 text-gray-600 small">{{ username }}</a>
                                             &nbsp;
                                             <span class=" d-lg-inline me-2 text-gray-600 small" onclick="location.href='/v2/signOut'">로그아웃</span>
+                                        </span>
                                         {% if type %}
                                          <script>
                                             detectTF = true;

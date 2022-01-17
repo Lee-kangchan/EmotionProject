@@ -8,6 +8,7 @@
 
 ## 초기 설정
 
+#### my_settings.py 설정 (manage.py와 같은 위치)
 ```
 SECRET_KEY = {
     '비밀번호 키(개발자에게 요청)'
